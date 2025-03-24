@@ -1,6 +1,12 @@
 # frozen_string_literal: true
 
 module Facturae
+  # Metadata of the invoice
+  #
+  # @attr_reader [String] schema_version
+  # @attr_accessor [String] modality
+  # @attr_accessor [String] invoice_issuer_type
+  # @attr_accessor [Hash] batch
   class FileHeader
     SCHEMA_VERSION = "3.2.1"
     ISSUER = "EM"

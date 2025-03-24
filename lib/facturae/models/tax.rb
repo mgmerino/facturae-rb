@@ -1,6 +1,10 @@
 # frozen_string_literal: true
 
 module Facturae
+  # Represents a tax.
+  # @attr [String] tax_type_code The tax type code.
+  # @attr [Float] tax_rate The tax rate.
+  # @attr [Float] taxable_base The taxable base.
   class Tax
     TAX_IVA = "01"
     TAX_IPSI = "02"
@@ -42,7 +46,7 @@ module Facturae
                   :tax_rate,
                   :taxable_base
 
-    def initialize(tax_type_code: TAX_IVA, tax_rate:, taxable_base:)
+    def initialize(tax_rate:, taxable_base:, tax_type_code: TAX_IVA)
       @tax_type_code = tax_type_code
       @tax_rate = tax_rate
       @taxable_base = taxable_base
