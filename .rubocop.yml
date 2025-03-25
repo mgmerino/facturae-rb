@@ -12,3 +12,7 @@ Metrics/MethodLength:
 
 Metrics/AbcSize:
   Max: 18
+
+Metrics/BlockLength:
+  Exclude:
+    - spec/**/*_spec.rb
