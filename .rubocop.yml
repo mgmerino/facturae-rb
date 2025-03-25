@@ -9,3 +9,6 @@ Style/StringLiteralsInInterpolation:
 
 Metrics/MethodLength:
   Max: 115
+
+Metrics/AbcSize:
+  Max: 18
