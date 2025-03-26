@@ -46,10 +46,18 @@ module Facturae
                   :tax_rate,
                   :taxable_base
 
-    def initialize(tax_rate:, taxable_base:, tax_type_code: TAX_IVA)
+    def initialize(tax_rate:, taxable_base:, tax_type_code:)
       @tax_type_code = tax_type_code
       @tax_rate = tax_rate
       @taxable_base = taxable_base
+    end
+
+    def valid?
+      return false unless TAXES_TYPES.include?(@tax_type_code)
+      return false unless @tax_rate.is_a?(Float)
+      return false unless @taxable_base.is_a?(Float)
+
+      true
     end
   end
 end

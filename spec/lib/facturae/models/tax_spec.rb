@@ -11,5 +11,20 @@ module Facturae
         expect(tax.taxable_base).to eq(0.1)
       end
     end
+
+    describe "#valid?" do
+      context "when the tax is valid" do
+        it "returns true" do
+          expect(tax.valid?).to be(true)
+        end
+      end
+
+      context "when the tax is not valid" do
+        it "returns false" do
+          tax.tax_type_code = nil
+          expect(tax.valid?).to be(false)
+        end
+      end
+    end
   end
 end

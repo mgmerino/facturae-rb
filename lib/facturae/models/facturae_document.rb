@@ -22,5 +22,15 @@ module Facturae
     def add_invoice(invoice)
       @invoices << invoice
     end
+
+    def valid?
+      return false if @invoices.empty?
+      return false if @invoices.any? { |invoice| !invoice.valid? }
+      return false unless @file_header.valid?
+      return false unless @seller_party.valid?
+      return false unless @buyer_party.valid?
+
+      true
+    end
   end
 end

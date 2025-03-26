@@ -10,7 +10,7 @@ module Facturae
   class Subject
     INDIVIDUAL = :individual
     LEGAL = :legal
-    TYPES = [INDIVIDUAL, LEGAL].freeze
+    SUBJECT_TYPES = [INDIVIDUAL, LEGAL].freeze
 
     attr_accessor :type,
                   :name_field1,
@@ -23,6 +23,16 @@ module Facturae
       @name_field1 = name_field1
       @name_field2 = name_field2
       @address_in_spain = address_in_spain
+    end
+
+    def valid?
+      return false unless SUBJECT_TYPES.include?(@type)
+      return false unless @name_field1.is_a?(String)
+      return false unless @name_field2.is_a?(String)
+      return false unless @address_in_spain.valid?
+      return false unless @overseas_address.nil? || @overseas_address.valid?
+
+      true
     end
   end
 end

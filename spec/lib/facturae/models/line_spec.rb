@@ -17,5 +17,29 @@ module Facturae
         expect(line.total_cost).to eq(10.0)
       end
     end
+
+    describe "#valid?" do
+      context "when the line is valid" do
+        it "returns true" do
+          line = described_class.new(item_description: "Item description",
+                                     quantity: 1,
+                                     unit_price_without_tax: 10.0,
+                                     gross_amount: 10.0,
+                                     total_cost: 10.0)
+          expect(line.valid?).to be(true)
+        end
+      end
+
+      context "when the line is not valid" do
+        it "returns false" do
+          line = described_class.new(item_description: nil,
+                                     quantity: 1,
+                                     unit_price_without_tax: 10.0,
+                                     gross_amount: 10.0,
+                                     total_cost: 10.0)
+          expect(line.valid?).to be(false)
+        end
+      end
+    end
   end
 end
