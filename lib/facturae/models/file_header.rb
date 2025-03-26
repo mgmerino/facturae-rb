@@ -8,7 +8,8 @@ module Facturae
   # @attr_accessor [String] invoice_issuer_type
   # @attr_accessor [Hash] batch
   class FileHeader
-    SCHEMA_VERSION = "3.2.1"
+    SCHEMA_VERSION = "3.2.2"
+
     ISSUER = "EM"
     RECIPIENT = "RE"
     INVOICE_ISSUER_TYPES = [ISSUER, RECIPIENT].freeze
@@ -23,11 +24,11 @@ module Facturae
 
     attr_reader :schema_version
 
-    def initialize(modality: INDIVIDUAL, invoice_issuer_type: ISSUER)
+    def initialize(modality:, invoice_issuer_type:, batch: nil)
       @schema_version = SCHEMA_VERSION
       @modality = modality
       @invoice_issuer_type = invoice_issuer_type
-      @batch = {
+      @batch = batch || {
         invoices_count: 1,
         series_invoice_number: nil,
         total_invoice_amount: 0.0,
@@ -35,6 +36,27 @@ module Facturae
         total_tax_inputs: 0.0,
         invoice_currency_code: "EUR"
       }
+    end
+
+    def valid?
+      return false unless MODALITY_TYPES.include?(@modality)
+      return false unless INVOICE_ISSUER_TYPES.include?(@invoice_issuer_type)
+      return false unless batch_valid?
+
+      true
+    end
+
+    private
+
+    def batch_valid?
+      return false unless @batch.keys.all? { |key| %i[invoices_count series_invoice_number total_invoice_amount total_tax_outputs total_tax_inputs invoice_currency_code].include?(key) }
+      return false unless @batch[:invoices_count].is_a?(Integer)
+      return false unless @batch[:total_invoice_amount].is_a?(Float)
+      return false unless @batch[:total_tax_outputs].is_a?(Float)
+      return false unless @batch[:total_tax_inputs].is_a?(Float)
+      return false unless @batch[:invoice_currency_code].is_a?(String)
+
+      true
     end
   end
 end
