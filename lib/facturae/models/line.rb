@@ -21,5 +21,15 @@ module Facturae
       @gross_amount          = gross_amount
       @total_cost            = total_cost
     end
+
+    def valid?
+      return false unless @item_description.is_a?(String)
+      return false unless @quantity.is_a?(Integer)
+      return false unless @unit_price_without_tax.is_a?(Float)
+      return false unless @gross_amount.is_a?(Float)
+      return false unless @total_cost.is_a?(Float)
+
+      true
+    end
   end
 end
