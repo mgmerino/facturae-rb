@@ -7,9 +7,9 @@ module Facturae
       let(:subject) { instance_double(Subject) }
 
       it "init all properties with expected values" do
-        expect(party.tax_identification).to a_hash_including(person_type_code: nil,
-                                                             residence_type_code: nil,
-                                                             tax_identification_number: nil)
+        expect(party.tax_identification).to a_hash_including(person_type_code: "F",
+                                                             residence_type_code: "R",
+                                                             tax_identification_number: "A12345678")
         expect(party.subject).to eq(subject)
       end
     end
