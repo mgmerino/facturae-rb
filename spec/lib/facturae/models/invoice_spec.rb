@@ -73,6 +73,5 @@ module Facturae
         end
       end
     end
-
   end
 end

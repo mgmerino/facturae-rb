@@ -86,7 +86,8 @@ module Facturae
 
     def totals_valid?
       return false unless @totals.keys.all? do |key|
-        %i[total_gross_amount total_tax_outputs total_taxes_withheld invoice_total payment_on_account payment_due total_outstanding_amount total_executable_amount].include?(key)
+        %i[total_gross_amount total_tax_outputs total_taxes_withheld invoice_total payment_on_account payment_due
+           total_outstanding_amount total_executable_amount].include?(key)
       end
 
       true

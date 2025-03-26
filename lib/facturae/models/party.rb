@@ -45,6 +45,5 @@ module Facturae
     def subject_valid?
       subject.valid?
     end
-
   end
 end

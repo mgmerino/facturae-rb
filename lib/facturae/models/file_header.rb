@@ -49,7 +49,17 @@ module Facturae
     private
 
     def batch_valid?
-      return false unless @batch.keys.all? { |key| %i[invoices_count series_invoice_number total_invoice_amount total_tax_outputs total_tax_inputs invoice_currency_code].include?(key) }
+      return false unless @batch.keys.all? do |key|
+        %i[invoices_count series_invoice_number total_invoice_amount total_tax_outputs total_tax_inputs
+           invoice_currency_code].include?(key)
+      end
+
+      return false unless batch_fields_valid?
+
+      true
+    end
+
+    def batch_fields_valid?
       return false unless @batch[:invoices_count].is_a?(Integer)
       return false unless @batch[:total_invoice_amount].is_a?(Float)
       return false unless @batch[:total_tax_outputs].is_a?(Float)
