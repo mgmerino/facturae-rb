@@ -17,11 +17,11 @@ module Facturae
     attr_accessor :tax_identification,
                   :subject
 
-    def initialize(subject: Subject.new, tax_identification_number: "A12345678")
+    def initialize(person_type_code:, residence_type_code:, tax_id_number:, subject: Subject.new)
       @tax_identification = {
-        person_type_code: NATURAL_PERSON,
-        residence_type_code: TAX_RESIDENT,
-        tax_identification_number: tax_identification_number
+        person_type_code: person_type_code,
+        residence_type_code: residence_type_code,
+        tax_id_number: tax_id_number
       }
 
       @subject = subject
@@ -37,7 +37,7 @@ module Facturae
     def tax_identification_valid?
       return false unless PARTY_TYPES.include?(@tax_identification[:person_type_code])
       return false unless TAX_TYPES.include?(@tax_identification[:residence_type_code])
-      return false unless @tax_identification[:tax_identification_number].is_a?(String)
+      return false unless @tax_identification[:tax_id_number].is_a?(String)
 
       true
     end
