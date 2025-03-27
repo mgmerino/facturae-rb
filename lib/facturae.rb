@@ -12,6 +12,7 @@ require_relative "facturae/models/party"
 require_relative "facturae/models/subject"
 require_relative "facturae/models/tax"
 require_relative "facturae/builders/parties_builder"
+require_relative "facturae/builders/file_header_builder"
 
 module Facturae
   class Error < StandardError; end
