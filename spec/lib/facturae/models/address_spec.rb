@@ -31,6 +31,21 @@ module Facturae
           expect(address.valid?).to be(false)
         end
       end
+
+      context "when the country code is not valid" do
+        it "returns false" do
+          address.country_code = "USA"
+          expect(address.valid?).to be(false)
+        end
+      end
+
+      context "when the country code is ESP and the town is nil" do
+        it "returns false" do
+          address.country_code = "ESP"
+          address.town = nil
+          expect(address.valid?).to be(false)
+        end
+      end
     end
   end
 end

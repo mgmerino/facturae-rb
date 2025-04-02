@@ -13,6 +13,11 @@ module Facturae
                     province: "Shelbyville", town: "Shelbyville", country_code: "ESP")
       end
 
+      let(:overseas_address) do
+        Address.new(address: "Cherry Blossom, 123", post_code: "12345",
+                    province: "Springfield", country_code: "USA")
+      end
+
       let(:seller_subject) do
         Subject.new(type: Subject::LEGAL, name_field1: "Electronic Parts Provider, S.L.",
                     name_field2: "ELECPPSL", address_in_spain: seller_address)
@@ -80,6 +85,22 @@ module Facturae
             </Parties>
           XML
         )
+      end
+
+      context "when the party has an overseas address" do
+        let(:buyer_subject) do
+          Subject.new(type: Subject::INDIVIDUAL, name_field1: "John", name_field2: "Doe", address_in_spain: nil)
+        end
+
+        it "includes the overseas address" do
+          buyer_subject.overseas_address = overseas_address
+
+          xml_data = Nokogiri::XML::Builder.new(encoding: "UTF-8") do |xml|
+            PartiesBuilder.new(seller_party, buyer_party).build(xml)
+          end.to_xml
+
+          expect(xml_data).to match(%r{<OverseasAddress>.*<Address>Cherry Blossom, 123</Address>.*</OverseasAddress>}m)
+        end
       end
     end
   end

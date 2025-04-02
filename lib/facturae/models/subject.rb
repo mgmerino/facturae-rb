@@ -15,13 +15,15 @@ module Facturae
     attr_accessor :type,
                   :name_field1,
                   :name_field2,
+                  :name_field3,
                   :address_in_spain,
                   :overseas_address # Optional
 
-    def initialize(type:, name_field1:, name_field2:, address_in_spain: Address.new)
+    def initialize(type:, name_field1:, name_field2:, name_field3: nil, address_in_spain: Address.new)
       @type = type
       @name_field1 = name_field1
       @name_field2 = name_field2
+      @name_field3 = name_field3
       @address_in_spain = address_in_spain
     end
 

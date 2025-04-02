@@ -30,21 +30,26 @@ module Facturae
       build_subject(xml, party.subject)
     end
 
+    # rubocop:disable Metrics/AbcSize
     def build_subject(xml, subject_obj)
       if subject_obj.type == :individual
         xml.Individual do
           xml.Name subject_obj.name_field1
           xml.FirstSurname subject_obj.name_field2
+          xml.SecondSurname subject_obj.name_field3 if subject_obj.name_field3
           build_address_in_spain(xml, subject_obj.address_in_spain)
+          build_overseas_address(xml, subject_obj.overseas_address)
         end
       else
         xml.LegalEntity do
           xml.CorporateName subject_obj.name_field1
           xml.TradeName subject_obj.name_field2
           build_address_in_spain(xml, subject_obj.address_in_spain)
+          build_overseas_address(xml, subject_obj.overseas_address)
         end
       end
     end
+    # rubocop:enable Metrics/AbcSize
 
     def build_address_in_spain(xml, address)
       return unless address
@@ -55,6 +60,17 @@ module Facturae
         xml.Town        address.town
         xml.Province    address.province
         xml.CountryCode address.country_code
+      end
+    end
+
+    def build_overseas_address(xml, address)
+      return unless address
+
+      xml.OverseasAddress do
+        xml.Address            address.address
+        xml.PostCodeAndTown    address.post_code
+        xml.Province           address.province
+        xml.CountryCode        address.country_code
       end
     end
   end
