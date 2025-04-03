@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "nokogiri"
+require "date"
 
 require_relative "facturae/version"
 require_relative "facturae/models/address"
@@ -13,6 +14,7 @@ require_relative "facturae/models/subject"
 require_relative "facturae/models/tax"
 require_relative "facturae/builders/parties_builder"
 require_relative "facturae/builders/file_header_builder"
+require_relative "facturae/builders/invoices_builder"
 
 module Facturae
   class Error < StandardError; end
