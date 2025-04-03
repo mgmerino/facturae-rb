@@ -2,15 +2,17 @@
 
 module Facturae
   RSpec.describe Invoice do
+    let(:invoice) do
+      described_class.new
+    end
+
     describe "#initialize" do
       it "initializes all properties with expected values" do
-        invoice = described_class.new
-
-        expect(invoice.invoice_header).to a_hash_including(invoice_number: nil,
-                                                           invoice_series_code: nil,
+        expect(invoice.invoice_header).to a_hash_including(invoice_number: "unset",
+                                                           invoice_series_code: "unset",
                                                            invoice_document_type: "unset",
                                                            invoice_class: "unset")
-        expect(invoice.issue_data).to a_hash_including(issue_date: nil,
+        expect(invoice.issue_data).to a_hash_including(issue_date: a_kind_of(Date),
                                                        language_name: "unset",
                                                        invoice_currency_code: "unset")
         expect(invoice.totals).to a_hash_including(total_gross_amount: 0.0,
