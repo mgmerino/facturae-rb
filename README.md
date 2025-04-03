@@ -1,11 +1,11 @@
 # Facturae
 🚧 Work in progress
 
-This gem is under development.
+This gem is under active development.
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/facturae.
+Bug reports and pull requests are welcome on GitHub at https://github.com/mgmerino/facturae.
 
 ## License
 
