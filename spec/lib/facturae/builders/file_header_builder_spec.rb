@@ -28,7 +28,7 @@ module Facturae
               <Modality>I</Modality>
               <InvoiceIssuerType>EM</InvoiceIssuerType>
               <Batch>
-                <SeriesInvoiceNumber>FA0000</SeriesInvoiceNumber>
+                <BatchIdentifier>FA0000</BatchIdentifier>
                 <InvoicesCount>1</InvoicesCount>
                 <TotalInvoicesAmount>
                   <TotalAmount>100.0</TotalAmount>

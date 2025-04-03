@@ -21,7 +21,7 @@ module Facturae
         xml.Modality(file_header.modality)
         xml.InvoiceIssuerType(file_header.invoice_issuer_type)
         xml.Batch do
-          xml.SeriesInvoiceNumber(batch_hash[:series_invoice_number])
+          xml.BatchIdentifier(batch_hash[:series_invoice_number])
           xml.InvoicesCount(batch_hash[:invoices_count])
           xml.TotalInvoicesAmount do
             xml.TotalAmount(batch_hash[:total_invoice_amount])

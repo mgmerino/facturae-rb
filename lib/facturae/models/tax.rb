@@ -44,17 +44,20 @@ module Facturae
 
     attr_accessor :tax_type_code,
                   :tax_rate,
-                  :taxable_base
+                  :taxable_base,
+                  :tax_amount
 
-    def initialize(tax_rate:, taxable_base:, tax_type_code:)
-      @tax_type_code = tax_type_code
+    def initialize(tax_rate:, taxable_base:, tax_amount:, tax_type_code:)
       @tax_rate = tax_rate
       @taxable_base = taxable_base
+      @tax_amount = tax_amount
+      @tax_type_code = tax_type_code
     end
 
     def valid?
       return false unless TAXES_TYPES.include?(@tax_type_code)
       return false unless @tax_rate.is_a?(Float)
+      return false unless @tax_amount.is_a?(Float)
       return false unless @taxable_base.is_a?(Float)
 
       true

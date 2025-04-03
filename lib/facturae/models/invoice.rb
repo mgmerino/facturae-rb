@@ -18,15 +18,15 @@ module Facturae
 
     def initialize
       @invoice_header = {
-        invoice_number: nil,
-        invoice_series_code: nil,
+        invoice_number: "unset",
+        invoice_series_code: "unset",
         invoice_document_type: "unset",
         invoice_class: "unset"
       }
       @issue_data = {
-        issue_date: nil,
-        language_name: "unset",
-        invoice_currency_code: "unset"
+        issue_date: Date.today,
+        invoice_currency_code: "unset",
+        language_name: "unset"
       }
       @totals = {
         total_gross_amount: 0.0,

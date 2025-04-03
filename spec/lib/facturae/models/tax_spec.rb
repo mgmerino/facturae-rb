@@ -2,7 +2,9 @@
 
 module Facturae
   RSpec.describe Tax do
-    let(:tax) { described_class.new(tax_type_code: Tax::TAX_IVA, tax_rate: 0.21, taxable_base: 0.1) }
+    let(:tax) do
+      described_class.new(tax_type_code: Tax::TAX_IVA, tax_rate: 0.21, tax_amount: 0.21, taxable_base: 0.1)
+    end
 
     describe "#initialize" do
       it "init all properties with expected values" do
