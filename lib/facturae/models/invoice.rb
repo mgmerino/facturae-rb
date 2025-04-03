@@ -16,19 +16,25 @@ module Facturae
                   :taxes_withheld,
                   :invoice_lines
 
-    def initialize
-      @invoice_header = {
+    # rubocop:disable Metrics/ParameterLists
+    def initialize(invoice_header: nil,
+                   issue_data: nil,
+                   totals: nil,
+                   taxes_output: nil,
+                   taxes_withheld: nil,
+                   invoice_lines: nil)
+      @invoice_header = invoice_header || {
         invoice_number: "unset",
         invoice_series_code: "unset",
         invoice_document_type: "unset",
         invoice_class: "unset"
       }
-      @issue_data = {
+      @issue_data = issue_data || {
         issue_date: Date.today,
         invoice_currency_code: "unset",
         language_name: "unset"
       }
-      @totals = {
+      @totals = totals || {
         total_gross_amount: 0.0,
         total_tax_outputs: 0.0,
         total_taxes_withheld: 0.0,
@@ -38,10 +44,11 @@ module Facturae
         total_outstanding_amount: 0.0,
         total_executable_amount: 0.0
       }
-      @taxes_output = []
-      @taxes_withheld = []
-      @invoice_lines = []
+      @taxes_output = taxes_output || []
+      @taxes_withheld = taxes_withheld || []
+      @invoice_lines = invoice_lines || []
     end
+    # rubocop:enable Metrics/ParameterLists
 
     def add_invoice_line(invoice_line)
       @invoice_lines << invoice_line

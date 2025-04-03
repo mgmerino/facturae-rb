@@ -27,6 +27,50 @@ module Facturae
         expect(invoice.taxes_withheld).to eq([])
         expect(invoice.invoice_lines).to eq([])
       end
+
+      context "when custom values are provided" do
+        let(:custom_invoice_header) do
+          {
+            invoice_number: "12345",
+            invoice_series_code: "A",
+            invoice_document_type: "F",
+            invoice_class: "I"
+          }
+        end
+
+        let(:custom_issue_data) do
+          {
+            issue_date: Date.new(2023, 10, 1),
+            invoice_currency_code: "EUR",
+            language_name: "es"
+          }
+        end
+
+        let(:custom_totals) do
+          {
+            total_gross_amount: 100.0,
+            total_tax_outputs: 20.0,
+            total_taxes_withheld: 0.0,
+            invoice_total: 120.0,
+            payment_on_account: 0.0,
+            payment_due: 0.0,
+            total_outstanding_amount: 120.0,
+            total_executable_amount: 120.0
+          }
+        end
+
+        it "initializes with custom values" do
+          custom_invoice = described_class.new(
+            invoice_header: custom_invoice_header,
+            issue_data: custom_issue_data,
+            totals: custom_totals
+          )
+
+          expect(custom_invoice.invoice_header).to eq(custom_invoice_header)
+          expect(custom_invoice.issue_data).to eq(custom_issue_data)
+          expect(custom_invoice.totals).to eq(custom_totals)
+        end
+      end
     end
 
     describe "#add_invoice_line" do
