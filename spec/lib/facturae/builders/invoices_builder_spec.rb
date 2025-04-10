@@ -2,6 +2,7 @@
 
 module Facturae
   RSpec.describe InvoicesBuilder do
+    let(:issue_date) { Date.new(2025, 4, 3) }
     let(:invoice) { Invoice.new }
     let(:invoice_line) do
       Line.new(item_description: "item",
@@ -14,12 +15,16 @@ module Facturae
     let(:tax) { Tax.new(tax_rate: 0.21, taxable_base: 1.0, tax_type_code: "01", tax_amount: 0.21) }
     let(:xml) { Nokogiri::XML::Builder.new }
 
-    it "builds the XML representation of the invoices" do
+    before do
       invoice.add_invoice_line(invoice_line)
       invoice.add_tax_output(tax)
       invoice.add_tax_withheld(tax)
       invoice_line.article_code = "1234567890123"
-      invoice.valid? # sanity check
+      invoice.issue_data[:issue_date] = issue_date
+    end
+
+    it "builds the XML representation of the invoices" do
+      expect(invoice.valid?).to eq(true) # sanity check
 
       described_class.new([invoice]).build(xml)
 
