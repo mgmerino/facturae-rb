@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative "signed_info"
+
 module Facturae
   module Xades
     # Handles the signing of XML documents using XAdES.

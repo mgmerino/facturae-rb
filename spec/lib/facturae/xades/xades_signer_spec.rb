@@ -30,9 +30,9 @@ module Facturae
         it "adds a signature node to the XML document" do
           signer.sign
 
-          expect(xml_doc.root.at_xpath("//ds:Signature")).not_to be_nil
-          expect(xml_doc.root.at_xpath("//ds:Signature")["Id"]).to eq("Signaturerandom-uuid-12345")
-          expect(xml_doc.root.at_xpath("//ds:Signature")["xmlns:xades"]).to eq("http://uri.etsi.org/01903/v1.3.2#")
+          expect(xml_doc.root.at_xpath("ds:Signature")).not_to be_nil
+          expect(xml_doc.root.at_xpath("ds:Signature")["Id"]).to eq("Signaturerandom-uuid-12345")
+          expect(xml_doc.root.at_xpath("ds:Signature")["xmlns:xades"]).to eq("http://uri.etsi.org/01903/v1.3.2#")
         end
       end
     end
