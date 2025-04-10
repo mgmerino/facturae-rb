@@ -14,7 +14,7 @@ module Facturae
       let(:xml_doc) { Nokogiri::XML(xml) }
       let(:private_key) { OpenSSL::PKey::RSA.new(2048) }
       let(:certificate) { OpenSSL::X509::Certificate.new }
-      let(:signer) { Xades::XadesSigner.new(xml_doc, private_key, certificate) }
+      let(:signer) { described_class.new(xml_doc, private_key, certificate) }
 
       describe "#initialize" do
         it "initializes with the expected attributes" do
@@ -33,6 +33,19 @@ module Facturae
           expect(xml_doc.root.at_xpath("ds:Signature")).not_to be_nil
           expect(xml_doc.root.at_xpath("ds:Signature")["Id"]).to eq("Signaturerandom-uuid-12345")
           expect(xml_doc.root.at_xpath("ds:Signature")["xmlns:xades"]).to eq("http://uri.etsi.org/01903/v1.3.2#")
+        end
+
+        it "adds the SignedInfo element to the signature node" do
+          signer.sign
+
+          signature_node = xml_doc.root.at_xpath("ds:Signature")
+          signed_info = signature_node.at_xpath("ds:SignedInfo")
+
+          expect(signed_info).not_to be_nil
+          expect(signed_info["Id"]).to eq("Signature-SignedInforandom-uuid-12345")
+          expect(signed_info.at_xpath("ds:CanonicalizationMethod")["Algorithm"]).to eq("http://www.w3.org/TR/2001/REC-xml-c14n-20010315")
+          expect(signed_info.at_xpath("ds:SignatureMethod")["Algorithm"]).to eq("http://www.w3.org/2000/09/xmldsig#rsa-sha1")
+          expect(signed_info.xpath("ds:Reference").size).to eq(3)
         end
       end
     end

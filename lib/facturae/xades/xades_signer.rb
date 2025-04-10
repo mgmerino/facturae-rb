@@ -28,6 +28,12 @@ module Facturae
       def sign
         signature_node = build_signature_node
         @xml_doc.root.add_child(signature_node)
+
+        # Add the SignedInfo element to the signature node
+        signed_info = SignedInfo.new(@xml_doc, @options).build
+        signature_node.add_child(signed_info)
+
+        # Add the KeyInfo element to the signature node
       end
 
       private
