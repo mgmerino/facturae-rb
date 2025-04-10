@@ -44,7 +44,7 @@ module Facturae
         signed_info.add_child(
           build_reference(id: @ref_id,
                           type: REFERENCE_ID_TYPE,
-                          transform: true)
+                          include_transform: true)
         )
 
         signed_info
@@ -73,7 +73,7 @@ module Facturae
         signature_method
       end
 
-      def build_reference(id: nil, type: nil, uri: nil, transform: nil)
+      def build_reference(id: nil, type: nil, uri: nil, include_transform: false)
         ref = @doc.create_element("ds:Reference")
         ref["Id"] = id if id
         ref["Type"] = type if type
@@ -82,7 +82,7 @@ module Facturae
         ref.add_child(build_digest_method)
         ref.add_child(build_digest_value)
 
-        ref.add_child(build_transforms) if transform
+        ref.add_child(build_transforms) if include_transform
 
         ref
       end
