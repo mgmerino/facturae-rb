@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
-require "nokogiri"
 require "date"
-require "base64"
+require "nokogiri"
 
 require_relative "facturae/version"
 require_relative "facturae/models/address"
