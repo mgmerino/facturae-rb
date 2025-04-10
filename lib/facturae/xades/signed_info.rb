@@ -18,7 +18,7 @@ module Facturae
         @options = options
         @signature_id = "Signature-SignedInfo#{rand_id}"
         @signed_properties_id = "SignedPropertiesID#{rand_id}"
-        @signed_properties_uri = "#Signature#{rand_id}-SignedProperties#rand_id}"
+        @signed_properties_uri = "#Signature#{rand_id}-SignedProperties#{rand_id}"
         @cert_uri = "#Certificate#{rand_id}"
         @ref_id = "Reference-ID-#{rand_id}"
       end
