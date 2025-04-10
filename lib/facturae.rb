@@ -2,6 +2,7 @@
 
 require "nokogiri"
 require "date"
+require "base64"
 
 require_relative "facturae/version"
 require_relative "facturae/models/address"
