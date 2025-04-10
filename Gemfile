@@ -5,9 +5,9 @@ source "https://rubygems.org"
 # Specify your gem's dependencies in facturae.gemspec
 gemspec
 
-gem "rake", "~> 13.0"
-
+gem "base64", "~> 0.2.0"
 gem "nokogiri", "~> 1.11"
+gem "rake", "~> 13.0"
 
 group :development, :test do
   gem "rspec", "~> 3.0"
