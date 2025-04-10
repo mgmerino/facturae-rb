@@ -35,6 +35,8 @@ module Facturae
         signature_node.add_child(signed_info)
 
         # Add the KeyInfo element to the signature node
+        key_info = KeyInfo.new(@xml_doc, @certificate, @options).build
+        signature_node.add_child(key_info)
       end
 
       private
