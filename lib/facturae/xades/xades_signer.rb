@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative "signed_info"
+require_relative "key_info"
 
 module Facturae
   module Xades
