@@ -13,8 +13,8 @@ module Facturae
       end
       let(:xml_doc) { Nokogiri::XML(xml) }
       let(:private_key) { OpenSSL::PKey::RSA.new(2048) }
-      let(:certificate) { OpenSSL::X509::Certificate.new }
-      let(:signer) { Xades::XadesSigner.new(xml_doc, private_key, certificate) }
+      let(:certificate) { OpenSSL::X509::Certificate.new(File.read("spec/fixtures/certificate.pem")) }
+      let(:signer) { described_class.new(xml_doc, private_key, certificate) }
 
       describe "#initialize" do
         it "initializes with the expected attributes" do
@@ -33,6 +33,24 @@ module Facturae
           expect(xml_doc.root.at_xpath("ds:Signature")).not_to be_nil
           expect(xml_doc.root.at_xpath("ds:Signature")["Id"]).to eq("Signaturerandom-uuid-12345")
           expect(xml_doc.root.at_xpath("ds:Signature")["xmlns:xades"]).to eq("http://uri.etsi.org/01903/v1.3.2#")
+        end
+
+        it "adds the SignedInfo element to the signature node" do
+          signer.sign
+
+          signature_node = xml_doc.root.at_xpath("ds:Signature")
+          signed_info = signature_node.at_xpath("ds:SignedInfo")
+
+          expect(signed_info).not_to be_nil
+        end
+
+        it "adds the KeyInfo element to the signature node" do
+          signer.sign
+
+          signature_node = xml_doc.root.at_xpath("ds:Signature")
+          key_info = signature_node.at_xpath("ds:KeyInfo")
+
+          expect(key_info).not_to be_nil
         end
       end
     end

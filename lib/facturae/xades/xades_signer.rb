@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative "signed_info"
+require_relative "key_info"
 
 module Facturae
   module Xades
@@ -28,6 +29,14 @@ module Facturae
       def sign
         signature_node = build_signature_node
         @xml_doc.root.add_child(signature_node)
+
+        # Add the SignedInfo element to the signature node
+        signed_info = SignedInfo.new(@xml_doc, @options).build
+        signature_node.add_child(signed_info)
+
+        # Add the KeyInfo element to the signature node
+        key_info = KeyInfo.new(@xml_doc, @certificate, @options).build
+        signature_node.add_child(key_info)
       end
 
       private
