@@ -32,22 +32,19 @@ module Facturae
         signed_info.add_child(
           build_reference(id: @signed_properties_id,
                           type: SIGNED_PROPERTIES_TYPE,
-                          uri: @signed_properties_uri,
-                          algorithm: DIGEST_METHOD_ALGORITHM)
+                          uri: @signed_properties_uri)
         )
 
         # Certificate reference
         signed_info.add_child(
-          build_reference(uri: @cert_uri,
-                          algorithm: DIGEST_METHOD_ALGORITHM)
+          build_reference(uri: @cert_uri)
         )
 
         # Document reference
         signed_info.add_child(
           build_reference(id: @ref_id,
                           type: REFERENCE_ID_TYPE,
-                          algorithm: DIGEST_METHOD_ALGORITHM,
-                          transform: TRANSFORM_ALGORITHM)
+                          transform: true)
         )
 
         signed_info
@@ -76,28 +73,38 @@ module Facturae
         signature_method
       end
 
-      def build_reference(algorithm:, id: nil, type: nil, uri: nil, transform: nil)
+      def build_reference(id: nil, type: nil, uri: nil, transform: nil)
         ref = @doc.create_element("ds:Reference")
         ref["Id"] = id if id
         ref["Type"] = type if type
         ref["URI"] = uri if uri
 
-        digest_method = @doc.create_element("ds:DigestMethod")
-        digest_method["Algorithm"] = algorithm
-        ref.add_child(digest_method)
+        ref.add_child(build_digest_method)
+        ref.add_child(build_digest_value)
 
-        digest_value = @doc.create_element("ds:DigestValue", "")
-        ref.add_child(digest_value)
-
-        if transform
-          transforms_node = @doc.create_element("ds:Transforms")
-          t_node = @doc.create_element("ds:Transform")
-          t_node["Algorithm"] = transform
-          transforms_node.add_child(t_node)
-          ref.add_child(transforms_node)
-        end
+        ref.add_child(build_transforms) if transform
 
         ref
+      end
+
+      def build_digest_method
+        digest_method = @doc.create_element("ds:DigestMethod")
+        digest_method["Algorithm"] = DIGEST_METHOD_ALGORITHM
+
+        digest_method
+      end
+
+      def build_digest_value
+        @doc.create_element("ds:DigestValue", "")
+      end
+
+      def build_transforms
+        transforms = @doc.create_element("ds:Transforms")
+        transform = @doc.create_element("ds:Transform")
+        transform["Algorithm"] = TRANSFORM_ALGORITHM
+        transforms.add_child(transform)
+
+        transforms
       end
     end
   end
