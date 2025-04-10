@@ -14,6 +14,7 @@ require_relative "facturae/models/subject"
 require_relative "facturae/models/tax"
 require_relative "facturae/builders/facturae_builder"
 require_relative "facturae/xades/utils"
+require_relative "facturae/xades/xades_signer"
 
 module Facturae
   class Error < StandardError; end
