@@ -2,6 +2,7 @@
 
 require_relative "signed_info"
 require_relative "key_info"
+require_relative "object_info"
 
 module Facturae
   module Xades
