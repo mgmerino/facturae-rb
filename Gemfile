@@ -6,7 +6,7 @@ source "https://rubygems.org"
 gemspec
 
 gem "base64", "~> 0.2.0"
-gem "nokogiri", "~> 1.11"
+gem "nokogiri", "~> 1.18"
 gem "rake", "~> 13.0"
 
 group :development, :test do
