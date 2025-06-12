@@ -93,30 +93,36 @@ module Facturae
         main_node = create_xml_element(@doc, "xades:SignaturePolicyIdentifier")
         policy_node = create_xml_element(@doc, "xades:SignaturePolicyId")
 
-        # Build SigPolicyId
+        policy_node.add_child(build_sig_policy_id)
+        policy_node.add_child(build_sig_policy_hash)
+        policy_node.add_child(build_sig_policy_qualifiers)
+        main_node.add_child(policy_node)
+
+        main_node
+      end
+
+      def build_sig_policy_id
         sig_policy_id = create_xml_element(@doc, "xades:SigPolicyId")
         identifier = create_xml_element(@doc, "xades:Identifier", OBJECT_IDENTIFIER)
         identifier.add_child(create_xml_element(@doc, "xades:Description", OBJECT_DESCRIPTION))
         sig_policy_id.add_child(identifier)
         sig_policy_id.add_child(create_xml_element(@doc, "xades:Description", SIG_POLICY_DESCRIPTION))
+        sig_policy_id
+      end
 
-        # Build SigPolicyHash
+      def build_sig_policy_hash
         sig_policy_hash = create_xml_element(@doc, "xades:SigPolicyHash")
         sig_policy_hash.add_child(create_xml_node_with_algorithm(@doc, "ds:DigestMethod", ALGORITHM_SHA1))
         sig_policy_hash.add_child(create_xml_element(@doc, "ds:DigestValue", SIG_POLICY_HASH_DIGEST))
+        sig_policy_hash
+      end
 
-        # Build SigPolicyQualifiers
+      def build_sig_policy_qualifiers
         sig_policy_qualifiers = create_xml_element(@doc, "xades:SigPolicyQualifiers")
         sig_policy_qualifier = create_xml_element(@doc, "xades:SigPolicyQualifier")
         sig_policy_qualifier.add_child(create_xml_element(@doc, "xades:SPURI", SIG_POLICY_URL))
         sig_policy_qualifiers.add_child(sig_policy_qualifier)
-
-        policy_node.add_child(sig_policy_id)
-        policy_node.add_child(sig_policy_hash)
-        policy_node.add_child(sig_policy_qualifiers)
-        main_node.add_child(policy_node)
-
-        main_node
+        sig_policy_qualifiers
       end
 
       def build_signer_role_node

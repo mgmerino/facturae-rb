@@ -36,7 +36,8 @@ module Facturae
           expect(result.name).to eq("Object")
           expect(result["Id"]).to eq("Object-ID-1234")
           expect(result.at_xpath(".//xades:QualifyingProperties")["Target"]).to eq("##{ids[:signature_id]}")
-          expect(result.at_xpath(".//xades:QualifyingProperties/xades:SignedProperties")["Id"]).to eq(ids[:signed_properties_id])
+          signed_properties = result.at_xpath(".//xades:QualifyingProperties/xades:SignedProperties")
+          expect(signed_properties["Id"]).to eq(ids[:signed_properties_id])
         end
 
         it "builds the SignedSignatureProperties element with the correct structure" do

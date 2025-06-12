@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-# rubocop:disable Metrics/ModuleLength
 module Facturae
   RSpec.describe Invoice do
     let(:invoice) do
@@ -122,4 +121,3 @@ module Facturae
     end
   end
 end
-# rubocop:enable Metrics/ModuleLength

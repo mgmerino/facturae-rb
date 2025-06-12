@@ -1,4 +1,5 @@
 AllCops:
+  NewCops: enable
   TargetRubyVersion: 3.1
 
 Style/StringLiterals:
@@ -8,9 +9,18 @@ Style/StringLiteralsInInterpolation:
   EnforcedStyle: double_quotes
 
 Metrics/AbcSize:
-  Max: 18
+  Max: 20
 
 Metrics/ClassLength:
+  Max: 160
+
+Metrics/ModuleLength:
+  Max: 160
+
+Metrics/CyclomaticComplexity:
+  Max: 8
+
+Layout/LineLength:
   Max: 120
 
 Metrics/MethodLength:
@@ -19,3 +29,9 @@ Metrics/MethodLength:
 Metrics/BlockLength:
   Exclude:
     - spec/**/*_spec.rb
+
+Style/Documentation:
+  Enabled: false
+
+Gemspec/RequireMFA:
+  Enabled: false
