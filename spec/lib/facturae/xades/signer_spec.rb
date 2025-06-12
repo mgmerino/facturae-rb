@@ -2,7 +2,7 @@
 
 module Facturae
   module Xades
-    RSpec.describe XadesSigner do
+    RSpec.describe Signer do
       let(:xml) do
         <<~XML
           <?xml version="1.0" encoding="UTF-8"?>

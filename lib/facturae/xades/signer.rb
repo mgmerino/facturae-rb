@@ -27,11 +27,11 @@ module Facturae
     #   private_key = OpenSSL::PKey::RSA.new(key_file)
     #   certificate = OpenSSL::X509::Certificate.new(cert_file)
     #
-    #   signer = XadesSigner.new(xml_doc, private_key, certificate)
+    #   signer = Signer.new(xml_doc, private_key, certificate)
     #   signer.sign
     #
     # @raise [SignatureError] if the signature structure is invalid
-    class XadesSigner
+    class Signer
       include Utils
 
       XADES_NAMESPACE = "http://uri.etsi.org/01903/v1.3.2#"
