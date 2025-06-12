@@ -71,7 +71,6 @@ module Facturae
         @reference_id = "Reference-ID-#{rand_id}"
         @signature_id = "Signature#{rand_id}"
         @signature_object_id = "#{signature_id}-Object#{rand_id}"
-        @signature_signed_properties_id = "#{signature_id}-SignedProperties#{rand_id}"
         @signature_value_id = "SignatureValue#{rand_id}"
         @signed_info_id = "Signature-SignedInfo#{rand_id}"
         @signed_properties_id = "SignedPropertiesID#{rand_id}"
