@@ -11,7 +11,7 @@ module Facturae
         "xades" => "http://uri.etsi.org/01903/v1.3.2#"
       }.freeze
 
-      def initialize(doc, certificate, signing_ids = {})
+      def initialize(doc, certificate, signing_ids)
         @doc = doc
         @certificate = certificate
         @certificate_id = signing_ids[:certificate_id] || "Certificate#{rand_id}"

@@ -24,7 +24,7 @@ module Facturae
         "xades" => "http://uri.etsi.org/01903/v1.3.2#"
       }.freeze
 
-      def initialize(doc, signing_ids = {})
+      def initialize(doc, signing_ids)
         @doc = doc
         @signed_info_id = signing_ids[:signed_info_id]
         @signature_signed_properties_id = signing_ids[:signature_signed_properties_id]
