@@ -6,15 +6,15 @@ module Facturae
     class KeyInfo
       include Utils
 
-      def initialize(doc, certificate, options = {})
+      def initialize(doc, certificate, signing_ids = {})
         @doc = doc
         @certificate = certificate
-        @options = options
+        @certificate_id = signing_ids[:certificate_id]
       end
 
       def build
         key_info = @doc.create_element("ds:KeyInfo")
-        key_info["Id"] = "Certificate#{rand_id}"
+        key_info["Id"] = @certificate_id
 
         key_info.add_child(build_x509_data)
         key_info.add_child(build_key_value)
