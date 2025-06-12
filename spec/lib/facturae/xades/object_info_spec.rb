@@ -17,14 +17,13 @@ module Facturae
       let(:ids) do
         {
           signature_id: "Signature",
-          sp_id: "SignedProperties-ID-",
-          object_id: "Object-ID-",
-          ref_doc_id: "Reference-ID-"
+          signed_properties_id: "SignedProperties-ID-",
+          signature_object_id: "Object-ID-",
+          reference_id: "Reference-ID-"
         }
       end
       let(:certificate) { OpenSSL::X509::Certificate.new(File.read("spec/fixtures/certificate.pem")) }
-      let(:options) { {} }
-      let(:object_info) { ObjectInfo.new(xml_doc, ids, certificate, options) }
+      let(:object_info) { ObjectInfo.new(xml_doc, ids, certificate) }
 
       describe "#build" do
         before do
@@ -35,7 +34,7 @@ module Facturae
           result = xml_doc.root.add_child(object_info.build)
 
           expect(result.name).to eq("Object")
-          expect(result["Id"]).to eq(ids[:object_id])
+          expect(result["Id"]).to eq("Object-ID-")
           expect(result.at_xpath(".//xades:QualifyingProperties")["Target"]).to eq("##{ids[:signature_id]}")
           expect(result.at_xpath(".//xades:QualifyingProperties/xades:SignedProperties")["Id"]).to eq(ids[:sp_id])
         end
