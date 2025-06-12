@@ -4,7 +4,7 @@ module Facturae
   module Xades
     RSpec.describe KeyInfo do
       let(:xml) do
-        <<-XML
+        <<~XML
           <?xml version="1.0" encoding="UTF-8" ?>
           <fe:Facturae xmlns:ds="http://www.w3.org/2000/09/xmldsig#"
                       xmlns:fe="http://www.facturae.es/Facturae/2014/v3.2.1/Facturae">
