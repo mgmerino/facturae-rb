@@ -15,3 +15,5 @@ group :development, :test do
   gem "rubocop-rspec", "~> 2.0"
   gem "solargraph", "~> 0.52.0"
 end
+
+gem "debug", "~> 1.10", groups: %i[development test]
