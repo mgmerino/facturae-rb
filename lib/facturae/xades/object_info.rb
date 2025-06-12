@@ -21,6 +21,15 @@ module Facturae
         "xades" => "http://uri.etsi.org/01903/v1.3.2#"
       }.freeze
 
+      # Initializes a new instance of ObjectInfo.
+      #
+      # @param doc [Nokogiri::XML::Document] The XML document to work with
+      # @param certificate [OpenSSL::X509::Certificate] The X509 certificate used for signing
+      # @param signing_ids [Hash] A hash containing the IDs used in the signature:
+      #   - :signature_id [String] The ID of the signature element
+      #   - :signed_properties_id [String] The ID of the signed properties element
+      #   - :signature_object_id [String] The ID of the signature object element
+      #   - :reference_id [String] The ID of the reference element
       def initialize(doc, certificate, signing_ids)
         @doc = doc
         @certificate = certificate

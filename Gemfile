@@ -16,4 +16,4 @@ group :development, :test do
   gem "solargraph", "~> 0.52.0"
 end
 
-gem "debug", "~> 1.10", :groups => [:development, :test]
+gem "debug", "~> 1.10", groups: %i[development test]
