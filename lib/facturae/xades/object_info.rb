@@ -5,22 +5,29 @@ module Facturae
     # TODO: review static values
     # This class is responsible for building the XAdES ObjectInfo element.
     class ObjectInfo
-      include Utils
+      ALGORITHM_SHA1 = "http://www.w3.org/2000/09/xmldsig#sha1"
+      ALGORITHM_SHA512 = "http://www.w3.org/2001/04/xmlenc#sha512"
+      OBJECT_DESCRIPTION = "Factura electrónica"
+      OBJECT_IDENTIFIER = "urn:oid:1.2.840.10003.5.109.10"
+      OBJECT_QUALIFIER = "OIDAsURN"
+      OBJECT_MIME_TYPE = "application/xml"
+      SIG_POLICY_URL = "http://www.facturae.es/politica_de_firma_formato_facturae/politica_de_firma_formato_facturae_v3_1.pdf"
+      SIG_POLICY_DESCRIPTION = "Política de Firma FacturaE v3.1"
+      SIG_POLICY_HASH_DIGEST = "Ohixl6upD6av8N7pEvDABhEL6hM="
 
-      DIGEST_METHOD_ALGORITHM = "http://www.w3.org/2001/04/xmlenc#sha512"
-
-      def initialize(doc, ids, certificate, options)
+      def initialize(doc, certificate, signing_ids)
         @doc = doc
-        @signature_id = ids[:signature_id]
-        @sp_id = ids[:sp_id]
-        @object_id = ids[:object_id]
-        @ref_doc_id = ids[:ref_doc_id]
         @certificate = certificate
-        @options = options
+
+        @signature_id = signing_ids[:signature_id]
+        @signed_properties_id = signing_ids[:signed_properties_id]
+        @signature_object_id = signing_ids[:signature_object_id]
+        @reference_id = signing_ids[:reference_id]
       end
 
       def build
         main_node = @doc.create_element("ds:Object")
+        debugger
         main_node["Id"] = @object_id
 
         qualifying_props_node = @doc.create_element("xades:QualifyingProperties")
@@ -67,7 +74,7 @@ module Facturae
       def build_cert_digest_node
         main_node = @doc.create_element("xades:CertDigest")
         digest_method_node = @doc.create_element("ds:DigestMethod")
-        digest_method_node["Algorithm"] = "http://www.w3.org/2001/04/xmlenc#sha512"
+        digest_method_node["Algorithm"] = ALGORITHM_SHA512
         main_node.add_child(digest_method_node)
 
         digest_val = Base64.strict_encode64(OpenSSL::Digest::SHA512.digest(@certificate.to_der))
@@ -101,9 +108,8 @@ module Facturae
 
       def build_sig_policy_id_node
         main_node = @doc.create_element("xades:SigPolicyId")
-        main_node.add_child(@doc.create_element("xades:Identifier",
-                                                "http://www.facturae.es/politica_de_firma_formato_facturae/politica_de_firma_formato_facturae_v3_1.pdf"))
-        main_node.add_child(@doc.create_element("xades:Description", "Política de Firma FacturaE v3.1"))
+        main_node.add_child(@doc.create_element("xades:Identifier", SIG_POLICY_URL))
+        main_node.add_child(@doc.create_element("xades:Description", SIG_POLICY_DESCRIPTION))
 
         main_node
       end
@@ -112,10 +118,10 @@ module Facturae
         main_node = @doc.create_element("xades:SigPolicyHash")
 
         digest_method_node = @doc.create_element("ds:DigestMethod")
-        digest_method_node["Algorithm"] = "http://www.w3.org/2000/09/xmldsig#sha1"
+        digest_method_node["Algorithm"] = ALGORITHM_SHA1
         main_node.add_child(digest_method_node)
 
-        digest_value_node = @doc.create_element("ds:DigestValue", "foo")
+        digest_value_node = @doc.create_element("ds:DigestValue", SIG_POLICY_HASH_DIGEST)
         main_node.add_child(digest_value_node)
 
         main_node
@@ -139,16 +145,16 @@ module Facturae
 
       def build_data_object_format_node
         main_node = @doc.create_element("xades:DataObjectFormat")
-        main_node["ObjectReference"] = "##{@ref_doc_id}"
+        main_node["ObjectReference"] = "##{@ref_id}"
 
-        main_node.add_child(@doc.create_element("xades:Description", "Factura electrónica"))
+        main_node.add_child(@doc.create_element("xades:Description", OBJECT_DESCRIPTION))
         object_id_node = @doc.create_element("xades:ObjectIdentifier")
-        identifier_node = @doc.create_element("xades:Identifier", "urn:oid:1.2.840.10003.5.109.10")
-        identifier_node["Qualifier"] = "OIDAsURN"
+        identifier_node = @doc.create_element("xades:Identifier", OBJECT_IDENTIFIER)
+        identifier_node["Qualifier"] = OBJECT_QUALIFIER
         object_id_node.add_child(identifier_node)
         main_node.add_child(object_id_node)
 
-        main_node.add_child(@doc.create_element("xades:MimeType", "text/xml"))
+        main_node.add_child(@doc.create_element("xades:MimeType", OBJECT_MIME_TYPE))
 
         main_node
       end
