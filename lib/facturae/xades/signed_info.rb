@@ -13,12 +13,11 @@ module Facturae
       SIGNED_PROPERTIES_TYPE = "http://uri.etsi.org/01903#SignedProperties"
       REFERENCE_ID_TYPE = "http://www.w3.org/2000/09/xmldsig#Object"
 
-      def initialize(doc, options)
+      def initialize(doc, signing_ids = {})
         @doc = doc
-        @options = options
-        @signature_id = "Signature-SignedInfo#{rand_id}"
+        @signed_info_id = signing_ids[:signed_info_id]
+        @signature_signed_properties_id = signing_ids[:signature_signed_properties_id]
         @signed_properties_id = "SignedPropertiesID#{rand_id}"
-        @signed_properties_uri = "#Signature#{rand_id}-SignedProperties#{rand_id}"
         @cert_uri = "#Certificate#{rand_id}"
         @ref_id = "Reference-ID-#{rand_id}"
       end
@@ -30,9 +29,9 @@ module Facturae
 
         # Signed properties reference
         signed_info.add_child(
-          build_reference(id: @signed_properties_id,
+          build_reference(id: @signature_signed_properties_id,
                           type: SIGNED_PROPERTIES_TYPE,
-                          uri: @signed_properties_uri)
+                          uri: @signature_signed_properties_id)
         )
 
         # Certificate reference
@@ -54,7 +53,7 @@ module Facturae
 
       def build_signed_info
         signed_info = @doc.create_element("ds:SignedInfo")
-        signed_info["Id"] = @signature_id
+        signed_info["Id"] = @signed_info_id
 
         signed_info
       end
@@ -73,14 +72,14 @@ module Facturae
         signature_method
       end
 
-      def build_reference(id: nil, type: nil, uri: nil, include_transform: false)
+      def build_reference(id: nil, type: nil, uri: nil, include_transform: false, node_to_digest: nil)
         ref = @doc.create_element("ds:Reference")
         ref["Id"] = id if id
         ref["Type"] = type if type
         ref["URI"] = uri if uri
 
         ref.add_child(build_digest_method)
-        ref.add_child(build_digest_value)
+        ref.add_child(build_digest_value(node_to_digest))
 
         ref.add_child(build_transforms) if include_transform
 
@@ -94,8 +93,8 @@ module Facturae
         digest_method
       end
 
-      def build_digest_value
-        @doc.create_element("ds:DigestValue", "")
+      def build_digest_value(value)
+        @doc.create_element("ds:DigestValue", encoded_digest(value))
       end
 
       def build_transforms
