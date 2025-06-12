@@ -4,7 +4,7 @@ module Facturae
   module Xades
     RSpec.describe ObjectInfo do
       let(:xml) do
-        <<-XML
+        <<~XML
           <?xml version="1.0" encoding="UTF-8" ?>
           <fe:Facturae xmlns:ds="http://www.w3.org/2000/09/xmldsig#"
                       xmlns:fe="http://www.facturae.es/Facturae/2014/v3.2.1/Facturae"
@@ -17,13 +17,13 @@ module Facturae
       let(:ids) do
         {
           signature_id: "Signature",
-          signed_properties_id: "SignedProperties-ID-",
-          signature_object_id: "Object-ID-",
-          reference_id: "Reference-ID-"
+          signed_properties_id: "SignedProperties-ID-1234",
+          signature_object_id: "Object-ID-1234",
+          reference_id: "Reference-ID-1234"
         }
       end
       let(:certificate) { OpenSSL::X509::Certificate.new(File.read("spec/fixtures/certificate.pem")) }
-      let(:object_info) { ObjectInfo.new(xml_doc, ids, certificate) }
+      let(:object_info) { ObjectInfo.new(xml_doc, certificate, ids) }
 
       describe "#build" do
         before do
@@ -34,9 +34,9 @@ module Facturae
           result = xml_doc.root.add_child(object_info.build)
 
           expect(result.name).to eq("Object")
-          expect(result["Id"]).to eq("Object-ID-")
+          expect(result["Id"]).to eq("Object-ID-1234")
           expect(result.at_xpath(".//xades:QualifyingProperties")["Target"]).to eq("##{ids[:signature_id]}")
-          expect(result.at_xpath(".//xades:QualifyingProperties/xades:SignedProperties")["Id"]).to eq(ids[:sp_id])
+          expect(result.at_xpath(".//xades:QualifyingProperties/xades:SignedProperties")["Id"]).to eq(ids[:signed_properties_id])
         end
 
         it "builds the SignedSignatureProperties element with the correct structure" do

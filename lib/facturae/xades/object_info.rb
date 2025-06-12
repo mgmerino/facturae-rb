@@ -2,7 +2,6 @@
 
 module Facturae
   module Xades
-    # TODO: review static values
     # This class is responsible for building the XAdES ObjectInfo element.
     class ObjectInfo
       ALGORITHM_SHA1 = "http://www.w3.org/2000/09/xmldsig#sha1"
@@ -27,14 +26,14 @@ module Facturae
 
       def build
         main_node = @doc.create_element("ds:Object")
-        debugger
-        main_node["Id"] = @object_id
+
+        main_node["Id"] = @signature_object_id
 
         qualifying_props_node = @doc.create_element("xades:QualifyingProperties")
         qualifying_props_node["Target"] = "##{@signature_id}"
 
         signed_properties_node = @doc.create_element("xades:SignedProperties")
-        signed_properties_node["Id"] = @sp_id
+        signed_properties_node["Id"] = @signed_properties_id
 
         signed_properties_node.add_child(build_signed_signature_properties_node)
         signed_properties_node.add_child(build_signed_data_object_properties_node)
