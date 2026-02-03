@@ -24,14 +24,13 @@ module Facturae
                   :charges,
                   :gross_amount
 
-    def initialize(item_description:, quantity:, unit_price_without_tax:, total_cost:,
-                   article_code: nil, unit_of_measure: UNIT_DEFAULT)
+    def initialize(item_description:, quantity:, unit_price_without_tax:, total_cost:, **options)
       @item_description = item_description
       @quantity = quantity
       @unit_price_without_tax = unit_price_without_tax
       @total_cost = total_cost
-      @article_code = article_code
-      @unit_of_measure = unit_of_measure
+      @article_code = options.fetch(:article_code, nil)
+      @unit_of_measure = options.fetch(:unit_of_measure, UNIT_DEFAULT)
       @discounts_and_rebates = []
       @charges = []
       @gross_amount = quantity * unit_price_without_tax
@@ -46,16 +45,38 @@ module Facturae
     end
 
     def valid?
-      return false unless @item_description.is_a?(String)
-      return false unless @quantity.is_a?(Float)
-      return false unless @unit_price_without_tax.is_a?(Float)
-      return false unless @total_cost.is_a?(Float)
-      return false unless @gross_amount.is_a?(Float)
-      return false if @article_code && !@article_code.is_a?(String)
-      return false unless @discounts_and_rebates.all? { |d| d[:reason].is_a?(String) && d[:amount].is_a?(Float) }
-      return false unless @charges.all? { |c| c[:reason].is_a?(String) && c[:amount].is_a?(Float) }
+      base_attributes_valid? &&
+        optional_attributes_valid? &&
+        discounts_and_rebates_valid? &&
+        charges_valid?
+    end
 
-      true
+    private
+
+    def base_attributes_valid?
+      @item_description.is_a?(String) &&
+        @quantity.is_a?(Float) &&
+        @unit_price_without_tax.is_a?(Float) &&
+        @total_cost.is_a?(Float) &&
+        @gross_amount.is_a?(Float)
+    end
+
+    def optional_attributes_valid?
+      return true unless @article_code
+
+      @article_code.is_a?(String)
+    end
+
+    def discounts_and_rebates_valid?
+      @discounts_and_rebates.all? do |discount|
+        discount[:reason].is_a?(String) && discount[:amount].is_a?(Float)
+      end
+    end
+
+    def charges_valid?
+      @charges.all? do |charge|
+        charge[:reason].is_a?(String) && charge[:amount].is_a?(Float)
+      end
     end
   end
 end
