@@ -13,6 +13,7 @@ Ship a publishable gemspec with accurate metadata and links.
 - Update `facturae.gemspec` to include summary, description, homepage,
   and metadata URIs.
 - Ensure values are consistent with README and repository URLs.
+- Make a release mechanism using Github Actions
 
 ### Implementation Steps
 
