@@ -6,9 +6,8 @@ module Facturae
     let(:invoice) { Invoice.new }
     let(:invoice_line) do
       Line.new(item_description: "item",
-               quantity: 1,
+               quantity: 1.0,
                unit_price_without_tax: 1.0,
-               gross_amount: 1.0,
                total_cost: 1.0,
                unit_of_measure: "01")
     end
@@ -81,7 +80,7 @@ module Facturae
               <Items>
                 <InvoiceLine>
                   <ItemDescription>item</ItemDescription>
-                  <Quantity>1</Quantity>
+                  <Quantity>1.0</Quantity>
                   <UnitOfMeasure>01</UnitOfMeasure>
                   <UnitPriceWithoutTax>1.0</UnitPriceWithoutTax>
                   <GrossAmount>1.0</GrossAmount>

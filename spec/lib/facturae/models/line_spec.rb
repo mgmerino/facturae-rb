@@ -4,9 +4,8 @@ module Facturae
   RSpec.describe Line do
     let(:line) do
       described_class.new(item_description: "Item description",
-                          quantity: 1,
+                          quantity: 1.0,
                           unit_price_without_tax: 10.0,
-                          gross_amount: 10.0,
                           total_cost: 10.0,
                           unit_of_measure: "01")
     end
@@ -14,10 +13,11 @@ module Facturae
     describe "#initialize" do
       it "initializes all properties with expected values" do
         expect(line.item_description).to eq("Item description")
-        expect(line.quantity).to eq(1)
+        expect(line.quantity).to eq(1.0)
         expect(line.unit_price_without_tax).to eq(10.0)
-        expect(line.gross_amount).to eq(10.0)
+        expect(line.gross_amount).to eq(10.0) # computed: quantity * unit_price_without_tax
         expect(line.total_cost).to eq(10.0)
+        expect(line.unit_of_measure).to eq("01")
       end
     end
 
@@ -25,9 +25,8 @@ module Facturae
       context "when the line is valid" do
         let(:line) do
           described_class.new(item_description: "Item description",
-                              quantity: 1,
+                              quantity: 1.0,
                               unit_price_without_tax: 10.0,
-                              gross_amount: 10.0,
                               total_cost: 10.0,
                               unit_of_measure: "01")
         end
@@ -40,12 +39,12 @@ module Facturae
       context "when the line is not valid" do
         let(:line) do
           described_class.new(item_description: nil,
-                              quantity: 1,
+                              quantity: 1.0,
                               unit_price_without_tax: 10.0,
-                              gross_amount: 10.0,
                               total_cost: 10.0,
                               unit_of_measure: "01")
         end
+
         it "returns false" do
           expect(line.valid?).to be(false)
         end
