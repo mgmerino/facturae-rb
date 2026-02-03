@@ -65,6 +65,20 @@ The roadmap is a state document that must stay current, but updates require huma
 
 ---
 
+## Roadmap Plans
+
+Implementation plans for the README roadmap live in:
+
+- `docs/roadmap-implementation-plan.md`
+- `docs/roadmap/high-priority.md`
+- `docs/roadmap/medium-priority.md`
+- `docs/roadmap/low-priority.md`
+
+When the roadmap in `README.md` changes, update the plan documents to match.
+Do not update roadmap state documents without explicit human approval.
+
+---
+
 ## Commands
 
 ### Development

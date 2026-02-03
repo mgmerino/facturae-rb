@@ -213,6 +213,14 @@ signer.sign
 File.write("invoice_signed.xml", xml_doc.to_xml)
 ```
 
+## Documentation Site
+
+The canonical documentation site is published at:
+
+- https://mgmerino.github.io/facturae-rb/
+
+API documentation is generated from Ruby comments using YARD.
+
 ---
 
 ## Pending / Unfinished Work
@@ -290,6 +298,13 @@ spec.metadata["changelog_uri"]   = "TODO: ..."
 ---
 
 ## Improvements Roadmap
+
+Implementation plans:
+
+- `docs/roadmap-implementation-plan.md`
+- `docs/roadmap/high-priority.md`
+- `docs/roadmap/medium-priority.md`
+- `docs/roadmap/low-priority.md`
 
 ### High Priority
 

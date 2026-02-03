@@ -1,0 +1,8 @@
+title: "Facturae"
+description: "Facturae 3.2.2 invoices and XAdES-BES signing for Ruby."
+baseurl: "/facturae-rb"
+url: "https://mgmerino.github.io"
+repo_url: "https://github.com/mgmerino/facturae-rb"
+repo_readme_url: "https://github.com/mgmerino/facturae-rb#readme"
+markdown: kramdown
+permalink: pretty

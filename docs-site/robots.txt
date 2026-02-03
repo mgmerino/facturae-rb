@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://mgmerino.github.io/facturae-rb/sitemap.xml
