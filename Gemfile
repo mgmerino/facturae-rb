@@ -10,6 +10,8 @@ gem "nokogiri", "~> 1.18"
 gem "rake", "~> 13.0"
 
 group :development, :test do
+  gem "jekyll", "~> 4.3"
+  gem "yard", "~> 0.9"
   gem "rspec", "~> 3.0"
   gem "rubocop", "~> 1.21"
   gem "rubocop-rspec", "~> 2.0"

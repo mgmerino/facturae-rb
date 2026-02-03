@@ -213,6 +213,14 @@ signer.sign
 File.write("invoice_signed.xml", xml_doc.to_xml)
 ```
 
+## Documentation Site
+
+The canonical documentation site is published at:
+
+- https://mgmerino.github.io/facturae-rb/
+
+API documentation is generated from Ruby comments using YARD.
+
 ---
 
 ## Pending / Unfinished Work

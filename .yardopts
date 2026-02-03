@@ -1,0 +1,6 @@
+--output-dir public/api
+--markup markdown
+--title "Facturae API"
+README.md
+CHANGELOG.md
+lib/**/*.rb
