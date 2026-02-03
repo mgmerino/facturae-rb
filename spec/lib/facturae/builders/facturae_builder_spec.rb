@@ -57,7 +57,6 @@ module Facturae
                quantity: 1.0,
                unit_price_without_tax: 100.0,
                unit_of_measure: Line::UNIT_DEFAULT,
-               gross_amount: 100.0,
                total_cost: 121.0)
     end
     let(:invoice) do
