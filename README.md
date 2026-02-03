@@ -291,6 +291,13 @@ spec.metadata["changelog_uri"]   = "TODO: ..."
 
 ## Improvements Roadmap
 
+Implementation plans:
+
+- `docs/roadmap-implementation-plan.md`
+- `docs/roadmap/high-priority.md`
+- `docs/roadmap/medium-priority.md`
+- `docs/roadmap/low-priority.md`
+
 ### High Priority
 
 - [ ] Complete gemspec metadata
