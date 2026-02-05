@@ -1,0 +1,126 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
+
+# Script to validate XAdES signature in a signed Facturae XML
+# Usage: bundle exec ruby bin/validate_signature [file.xml]
+#
+# This script performs basic structural validation of the XAdES signature.
+# For full validation, use official tools like FACe validator or xmlsec1.
+
+require "nokogiri"
+require "openssl"
+require "base64"
+
+NAMESPACES = {
+  "ds" => "http://www.w3.org/2000/09/xmldsig#",
+  "xades" => "http://uri.etsi.org/01903/v1.3.2#",
+  "fe" => "http://www.facturae.gob.es/formato/Versiones/Facturaev3_2_2.xml"
+}.freeze
+
+def validate_signature(file_path)
+  puts "Validating: #{file_path}"
+  puts "-" * 50
+
+  doc = Nokogiri::XML(File.read(file_path))
+
+  # Check basic structure
+  checks = []
+
+  # 1. Check Facturae root element
+  facturae = doc.at_xpath("//fe:Facturae", NAMESPACES)
+  checks << { name: "Facturae root element", pass: !facturae.nil? }
+
+  # 2. Check Signature element
+  signature = doc.at_xpath("//ds:Signature", NAMESPACES)
+  checks << { name: "ds:Signature element", pass: !signature.nil? }
+
+  # 3. Check SignedInfo
+  signed_info = doc.at_xpath("//ds:SignedInfo", NAMESPACES)
+  checks << { name: "ds:SignedInfo element", pass: !signed_info.nil? }
+
+  # 4. Check References
+  references = doc.xpath("//ds:SignedInfo/ds:Reference", NAMESPACES)
+  checks << { name: "ds:Reference elements (expect 3)", pass: references.size == 3 }
+
+  # 5. Check SignatureValue
+  sig_value = doc.at_xpath("//ds:SignatureValue", NAMESPACES)
+  sig_value_present = sig_value && !sig_value.content.strip.empty?
+  checks << { name: "ds:SignatureValue (non-empty)", pass: sig_value_present }
+
+  # 6. Check X509Certificate
+  x509_cert = doc.at_xpath("//ds:X509Certificate", NAMESPACES)
+  cert_present = x509_cert && !x509_cert.content.strip.empty?
+  checks << { name: "ds:X509Certificate (non-empty)", pass: cert_present }
+
+  # 7. Check QualifyingProperties (XAdES)
+  qualifying = doc.at_xpath("//xades:QualifyingProperties", NAMESPACES)
+  checks << { name: "xades:QualifyingProperties", pass: !qualifying.nil? }
+
+  # 8. Check SigningTime
+  signing_time = doc.at_xpath("//xades:SigningTime", NAMESPACES)
+  checks << { name: "xades:SigningTime", pass: !signing_time.nil? }
+
+  # 9. Check SigningCertificate
+  signing_cert = doc.at_xpath("//xades:SigningCertificate", NAMESPACES)
+  checks << { name: "xades:SigningCertificate", pass: !signing_cert.nil? }
+
+  # 10. Check SignaturePolicyIdentifier
+  policy = doc.at_xpath("//xades:SignaturePolicyIdentifier", NAMESPACES)
+  checks << { name: "xades:SignaturePolicyIdentifier", pass: !policy.nil? }
+
+  # 11. Check DigestValues in references
+  doc_ref = references.find { |r| r.at_xpath(".//ds:Transforms", NAMESPACES) }
+  if doc_ref
+    digest = doc_ref.at_xpath(".//ds:DigestValue", NAMESPACES)
+    digest_present = digest && !digest.content.strip.empty?
+    checks << { name: "Document DigestValue (non-empty)", pass: digest_present }
+  end
+
+  # 12. Verify certificate can be parsed
+  if cert_present
+    begin
+      cert_pem = "-----BEGIN CERTIFICATE-----\n#{x509_cert.content}\n-----END CERTIFICATE-----"
+      cert = OpenSSL::X509::Certificate.new(cert_pem)
+      checks << { name: "Certificate parseable", pass: true, detail: cert.subject.to_s }
+    rescue StandardError => e
+      checks << { name: "Certificate parseable", pass: false, detail: e.message }
+    end
+  end
+
+  # Print results
+  passed = 0
+  failed = 0
+
+  checks.each do |check|
+    status = check[:pass] ? "✓" : "✗"
+    puts "#{status} #{check[:name]}"
+    puts "  #{check[:detail]}" if check[:detail]
+    check[:pass] ? passed += 1 : failed += 1
+  end
+
+  puts "-" * 50
+  puts "Passed: #{passed}/#{checks.size}"
+
+  if failed.zero?
+    puts "All structural checks passed!"
+    puts "\nNote: This is basic structural validation only."
+    puts "For cryptographic verification, use:"
+    puts "  - FACe validator: https://face.gob.es/es/facturas/validar-visualizar-facturas"
+    puts "  - xmlsec1: xmlsec1 --verify --trusted-pem cert.pem file.xml"
+    exit 0
+  else
+    puts "#{failed} check(s) failed."
+    exit 1
+  end
+end
+# rubocop:enable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
+
+if ARGV.empty?
+  puts "Usage: bundle exec ruby bin/validate_signature <file.xml>"
+  puts "Example: bundle exec ruby bin/validate_signature spec/fixtures/signed_invoice.xml"
+  exit 1
+end
+
+validate_signature(ARGV[0])
