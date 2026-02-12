@@ -85,6 +85,11 @@ Demonstrate that signed XML complies with official validation tooling.
 - If a validator CLI is available, add a non-blocking CI step or
   a local script in `bin/`.
 
+### CI execution modes
+
+- Run project checks locally with `bin/ci` before pushing.
+- Trigger CI manually in GitHub Actions with `gh workflow run main.yml`.
+
 ### Acceptance Criteria
 
 - There is a documented validation process.
