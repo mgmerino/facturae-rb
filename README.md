@@ -1,5 +1,10 @@
 # Facturae
 
+[![CI](https://github.com/mgmerino/facturae-rb/actions/workflows/main.yml/badge.svg)](https://github.com/mgmerino/facturae-rb/actions/workflows/main.yml)
+[![Pages](https://github.com/mgmerino/facturae-rb/actions/workflows/pages.yml/badge.svg)](https://github.com/mgmerino/facturae-rb/actions/workflows/pages.yml)
+[![Gem Version](https://badge.fury.io/rb/facturae.svg)](https://badge.fury.io/rb/facturae)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 A Ruby gem for generating electronic invoices following the **Facturae 3.2.2** (06/06/2017) Spanish standard, with XAdES-BES digital signature support.
 
 > **Status:** Work in progress - Core functionality is implemented but some features are incomplete.
@@ -16,6 +21,15 @@ This gem provides:
 ### What is Facturae?
 
 Facturae is the Spanish electronic invoicing standard mandated by the Spanish government for invoices to public administrations. The format is defined by the Spanish Ministry of Finance and uses XML with optional XAdES digital signatures.
+
+## Documentation Site
+
+The canonical documentation site is published at:
+
+- https://mgmerino.github.io/facturae-rb/
+- https://deepwiki.com/mgmerino/facturae-rb
+
+API documentation is generated from Ruby comments using YARD.
 
 ## Architecture
 
@@ -212,14 +226,6 @@ signer.sign
 # Save signed invoice
 File.write("invoice_signed.xml", xml_doc.to_xml)
 ```
-
-## Documentation Site
-
-The canonical documentation site is published at:
-
-- https://mgmerino.github.io/facturae-rb/
-
-API documentation is generated from Ruby comments using YARD.
 
 ---
 
