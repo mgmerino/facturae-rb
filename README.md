@@ -342,6 +342,9 @@ Implementation plans:
 # Install dependencies
 bundle install
 
+# Run the same checks as GitHub CI
+bin/ci
+
 # Run tests
 bundle exec rspec
 
