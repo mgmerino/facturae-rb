@@ -345,6 +345,9 @@ bundle install
 # Run the same checks as GitHub CI
 bin/ci
 
+# Manually trigger CI workflow in GitHub Actions
+gh workflow run main.yml
+
 # Run tests
 bundle exec rspec
 
