@@ -117,5 +117,27 @@ module Facturae
         end
       end
     end
+
+    describe "#errors" do
+      let(:invoice) { described_class.new }
+
+      it "returns empty array when valid" do
+        invoice.valid?
+        expect(invoice.errors).to be_empty
+      end
+
+      it "returns error for unknown invoice_header key" do
+        invoice.invoice_header[:bad_key] = "x"
+        invoice.valid?
+        expect(invoice.errors).to include("invoice_header contains unknown key: bad_key")
+      end
+
+      it "returns nested tax errors with indexed dot-path" do
+        bad_tax = Tax.new(tax_type_code: "ZZ", tax_rate: 0.21, tax_amount: 0.21, taxable_base: 1.0)
+        invoice.add_tax_output(bad_tax)
+        invoice.valid?
+        expect(invoice.errors).to include("taxes_output[0].tax_type_code is not a valid tax type")
+      end
+    end
   end
 end

@@ -52,5 +52,28 @@ module Facturae
         end
       end
     end
+
+    describe "#errors" do
+      it "returns empty array when valid" do
+        fh = described_class.new(modality: "I", invoice_issuer_type: "EM")
+        fh.valid?
+        expect(fh.errors).to be_empty
+      end
+
+      it "returns error for invalid modality" do
+        fh = described_class.new(modality: "X", invoice_issuer_type: "EM")
+        fh.valid?
+        expect(fh.errors).to include("modality must be I or L")
+      end
+
+      it "returns error for invalid batch field type" do
+        fh = described_class.new(modality: "I", invoice_issuer_type: "EM",
+                                 batch: { invoices_count: 1, series_invoice_number: nil,
+                                          total_invoice_amount: 0.0, total_tax_outputs: 0.0,
+                                          total_tax_inputs: 0.0, invoice_currency_code: 1 })
+        fh.valid?
+        expect(fh.errors).to include("batch.invoice_currency_code must be a String")
+      end
+    end
   end
 end
