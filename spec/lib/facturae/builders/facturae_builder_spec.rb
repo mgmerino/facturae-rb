@@ -193,18 +193,9 @@ module Facturae
                   <InvoiceIssueData>
                     <IssueDate>2023-10-01</IssueDate>
                     <InvoiceCurrencyCode>EUR</InvoiceCurrencyCode>
+                    <TaxCurrencyCode>EUR</TaxCurrencyCode>
                     <LanguageName>es</LanguageName>
                   </InvoiceIssueData>
-                  <InvoiceTotals>
-                    <TotalGrossAmount>100.0</TotalGrossAmount>
-                    <TotalTaxOutputs>20.0</TotalTaxOutputs>
-                    <TotalTaxesWithheld>0.0</TotalTaxesWithheld>
-                    <InvoiceTotal>120.0</InvoiceTotal>
-                    <PaymentOnAccount>0.0</PaymentOnAccount>
-                    <PaymentDue>0.0</PaymentDue>
-                    <TotalOutstandingAmount>120.0</TotalOutstandingAmount>
-                    <TotalExecutableAmount>120.0</TotalExecutableAmount>
-                  </InvoiceTotals>
                   <TaxesOutputs>
                     <Tax>
                       <TaxTypeCode>VAT</TaxTypeCode>
@@ -229,6 +220,16 @@ module Facturae
                       </TaxAmount>
                     </Tax>
                   </TaxesWithheld>
+                  <InvoiceTotals>
+                    <TotalGrossAmount>100.0</TotalGrossAmount>
+                    <TotalTaxOutputs>20.0</TotalTaxOutputs>
+                    <TotalTaxesWithheld>0.0</TotalTaxesWithheld>
+                    <InvoiceTotal>120.0</InvoiceTotal>
+                    <PaymentOnAccount>0.0</PaymentOnAccount>
+                    <PaymentDue>0.0</PaymentDue>
+                    <TotalOutstandingAmount>120.0</TotalOutstandingAmount>
+                    <TotalExecutableAmount>120.0</TotalExecutableAmount>
+                  </InvoiceTotals>
                   <Items>
                     <InvoiceLine>
                       <ItemDescription>Product 1</ItemDescription>

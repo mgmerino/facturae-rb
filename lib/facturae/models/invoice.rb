@@ -85,7 +85,7 @@ module Facturae
 
     def issue_data_valid?
       return false unless @issue_data.keys.all? do |key|
-        %i[issue_date language_name invoice_currency_code].include?(key)
+        %i[issue_date language_name invoice_currency_code tax_currency_code].include?(key)
       end
 
       true

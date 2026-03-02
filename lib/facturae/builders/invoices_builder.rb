@@ -25,9 +25,9 @@ module Facturae
       xml.Invoice do |invoice_xml|
         build_invoice_header(invoice_xml, invoice.invoice_header)
         build_invoice_issue_data(invoice_xml, invoice.issue_data)
-        build_totals(invoice_xml, invoice.totals)
         build_taxes_outputs(invoice_xml, invoice.taxes_output)
         build_taxes_withheld(invoice_xml, invoice.taxes_withheld)
+        build_totals(invoice_xml, invoice.totals)
         build_invoice_lines(invoice_xml, invoice.invoice_lines)
       end
     end
@@ -45,6 +45,7 @@ module Facturae
       xml.InvoiceIssueData do
         xml.IssueDate issue_data[:issue_date].strftime("%Y-%m-%d") if issue_data[:issue_date]
         xml.InvoiceCurrencyCode(issue_data[:invoice_currency_code])
+        xml.TaxCurrencyCode(issue_data[:tax_currency_code] || "EUR")
         xml.LanguageName issue_data[:language_name]
       end
     end

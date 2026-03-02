@@ -41,18 +41,9 @@ module Facturae
               <InvoiceIssueData>
                 <IssueDate>2025-04-03</IssueDate>
                 <InvoiceCurrencyCode>unset</InvoiceCurrencyCode>
+                <TaxCurrencyCode>EUR</TaxCurrencyCode>
                 <LanguageName>unset</LanguageName>
               </InvoiceIssueData>
-              <InvoiceTotals>
-                <TotalGrossAmount>0.0</TotalGrossAmount>
-                <TotalTaxOutputs>0.0</TotalTaxOutputs>
-                <TotalTaxesWithheld>0.0</TotalTaxesWithheld>
-                <InvoiceTotal>0.0</InvoiceTotal>
-                <PaymentOnAccount>0.0</PaymentOnAccount>
-                <PaymentDue>0.0</PaymentDue>
-                <TotalOutstandingAmount>0.0</TotalOutstandingAmount>
-                <TotalExecutableAmount>0.0</TotalExecutableAmount>
-              </InvoiceTotals>
               <TaxesOutputs>
                 <Tax>
                   <TaxTypeCode>01</TaxTypeCode>
@@ -77,6 +68,16 @@ module Facturae
                   </TaxAmount>
                 </Tax>
               </TaxesWithheld>
+              <InvoiceTotals>
+                <TotalGrossAmount>0.0</TotalGrossAmount>
+                <TotalTaxOutputs>0.0</TotalTaxOutputs>
+                <TotalTaxesWithheld>0.0</TotalTaxesWithheld>
+                <InvoiceTotal>0.0</InvoiceTotal>
+                <PaymentOnAccount>0.0</PaymentOnAccount>
+                <PaymentDue>0.0</PaymentDue>
+                <TotalOutstandingAmount>0.0</TotalOutstandingAmount>
+                <TotalExecutableAmount>0.0</TotalExecutableAmount>
+              </InvoiceTotals>
               <Items>
                 <InvoiceLine>
                   <ItemDescription>item</ItemDescription>
