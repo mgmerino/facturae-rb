@@ -45,7 +45,7 @@ module Facturae
         expect(xml_data).to eq(
           <<~XML
             <?xml version="1.0" encoding="UTF-8"?>
-            <Parties>
+            <Parties xmlns="">
               <SellerParty>
                 <TaxIdentification>
                   <PersonTypeCode>J</PersonTypeCode>

@@ -9,7 +9,7 @@ module Facturae
     end
 
     def build(xml)
-      xml.Parties do
+      xml.Parties(xmlns: "") do
         xml.SellerParty do
           build_party(xml, @seller_party)
         end

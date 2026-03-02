@@ -30,7 +30,7 @@ module Facturae
       expect(xml.to_xml).to eq(
         <<~XML
           <?xml version="1.0"?>
-          <Invoices>
+          <Invoices xmlns="">
             <Invoice>
               <InvoiceHeader>
                 <InvoiceNumber>unset</InvoiceNumber>
@@ -41,18 +41,9 @@ module Facturae
               <InvoiceIssueData>
                 <IssueDate>2025-04-03</IssueDate>
                 <InvoiceCurrencyCode>unset</InvoiceCurrencyCode>
+                <TaxCurrencyCode>EUR</TaxCurrencyCode>
                 <LanguageName>unset</LanguageName>
               </InvoiceIssueData>
-              <InvoiceTotals>
-                <TotalGrossAmount>0.0</TotalGrossAmount>
-                <TotalTaxOutputs>0.0</TotalTaxOutputs>
-                <TotalTaxesWithheld>0.0</TotalTaxesWithheld>
-                <InvoiceTotal>0.0</InvoiceTotal>
-                <PaymentOnAccount>0.0</PaymentOnAccount>
-                <PaymentDue>0.0</PaymentDue>
-                <TotalOutstandingAmount>0.0</TotalOutstandingAmount>
-                <TotalExecutableAmount>0.0</TotalExecutableAmount>
-              </InvoiceTotals>
               <TaxesOutputs>
                 <Tax>
                   <TaxTypeCode>01</TaxTypeCode>
@@ -77,14 +68,23 @@ module Facturae
                   </TaxAmount>
                 </Tax>
               </TaxesWithheld>
+              <InvoiceTotals>
+                <TotalGrossAmount>0.0</TotalGrossAmount>
+                <TotalGrossAmountBeforeTaxes>0.0</TotalGrossAmountBeforeTaxes>
+                <TotalTaxOutputs>0.0</TotalTaxOutputs>
+                <TotalTaxesWithheld>0.0</TotalTaxesWithheld>
+                <InvoiceTotal>0.0</InvoiceTotal>
+                <TotalOutstandingAmount>0.0</TotalOutstandingAmount>
+                <TotalExecutableAmount>0.0</TotalExecutableAmount>
+              </InvoiceTotals>
               <Items>
                 <InvoiceLine>
                   <ItemDescription>item</ItemDescription>
                   <Quantity>1.0</Quantity>
                   <UnitOfMeasure>01</UnitOfMeasure>
                   <UnitPriceWithoutTax>1.0</UnitPriceWithoutTax>
-                  <GrossAmount>1.0</GrossAmount>
                   <TotalCost>1.0</TotalCost>
+                  <GrossAmount>1.0</GrossAmount>
                   <ArticleCode>1234567890123</ArticleCode>
                 </InvoiceLine>
               </Items>

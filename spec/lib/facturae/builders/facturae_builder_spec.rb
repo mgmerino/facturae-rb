@@ -74,11 +74,10 @@ module Facturae
         },
         totals: {
           total_gross_amount: 100.0,
+          total_gross_amount_before_taxes: 100.0,
           total_tax_outputs: 20.0,
           total_taxes_withheld: 0.0,
           invoice_total: 120.0,
-          payment_on_account: 0.0,
-          payment_due: 0.0,
           total_outstanding_amount: 120.0,
           total_executable_amount: 120.0
         },
@@ -125,7 +124,7 @@ module Facturae
           <<~XML
             <?xml version="1.0" encoding="UTF-8"?>
             <Facturae xmlns="http://www.facturae.gob.es/formato/Versiones/Facturaev3_2_2.xml">
-              <FileHeader>
+              <FileHeader xmlns="">
                 <SchemaVersion>3.2.2</SchemaVersion>
                 <Modality>I</Modality>
                 <InvoiceIssuerType>EM</InvoiceIssuerType>
@@ -144,7 +143,7 @@ module Facturae
                   <InvoiceCurrencyCode>EUR</InvoiceCurrencyCode>
                 </Batch>
               </FileHeader>
-              <Parties>
+              <Parties xmlns="">
                 <SellerParty>
                   <TaxIdentification>
                     <PersonTypeCode>J</PersonTypeCode>
@@ -182,7 +181,7 @@ module Facturae
                   </Individual>
                 </BuyerParty>
               </Parties>
-              <Invoices>
+              <Invoices xmlns="">
                 <Invoice>
                   <InvoiceHeader>
                     <InvoiceNumber>12345</InvoiceNumber>
@@ -193,18 +192,9 @@ module Facturae
                   <InvoiceIssueData>
                     <IssueDate>2023-10-01</IssueDate>
                     <InvoiceCurrencyCode>EUR</InvoiceCurrencyCode>
+                    <TaxCurrencyCode>EUR</TaxCurrencyCode>
                     <LanguageName>es</LanguageName>
                   </InvoiceIssueData>
-                  <InvoiceTotals>
-                    <TotalGrossAmount>100.0</TotalGrossAmount>
-                    <TotalTaxOutputs>20.0</TotalTaxOutputs>
-                    <TotalTaxesWithheld>0.0</TotalTaxesWithheld>
-                    <InvoiceTotal>120.0</InvoiceTotal>
-                    <PaymentOnAccount>0.0</PaymentOnAccount>
-                    <PaymentDue>0.0</PaymentDue>
-                    <TotalOutstandingAmount>120.0</TotalOutstandingAmount>
-                    <TotalExecutableAmount>120.0</TotalExecutableAmount>
-                  </InvoiceTotals>
                   <TaxesOutputs>
                     <Tax>
                       <TaxTypeCode>VAT</TaxTypeCode>
@@ -229,14 +219,23 @@ module Facturae
                       </TaxAmount>
                     </Tax>
                   </TaxesWithheld>
+                  <InvoiceTotals>
+                    <TotalGrossAmount>100.0</TotalGrossAmount>
+                    <TotalGrossAmountBeforeTaxes>100.0</TotalGrossAmountBeforeTaxes>
+                    <TotalTaxOutputs>20.0</TotalTaxOutputs>
+                    <TotalTaxesWithheld>0.0</TotalTaxesWithheld>
+                    <InvoiceTotal>120.0</InvoiceTotal>
+                    <TotalOutstandingAmount>120.0</TotalOutstandingAmount>
+                    <TotalExecutableAmount>120.0</TotalExecutableAmount>
+                  </InvoiceTotals>
                   <Items>
                     <InvoiceLine>
                       <ItemDescription>Product 1</ItemDescription>
                       <Quantity>1.0</Quantity>
                       <UnitOfMeasure>01</UnitOfMeasure>
                       <UnitPriceWithoutTax>100.0</UnitPriceWithoutTax>
-                      <GrossAmount>100.0</GrossAmount>
                       <TotalCost>121.0</TotalCost>
+                      <GrossAmount>100.0</GrossAmount>
                       <ArticleCode>1234567</ArticleCode>
                     </InvoiceLine>
                   </Items>
