@@ -87,31 +87,33 @@ module Facturae
         signature_node = build_signature_node
         @xml_doc.root.add_child(signature_node)
 
-        # Add KeyInfo first so SignedInfo can digest it by ID
-        key_info = build_key_info
-        raise SignatureError, "Missing KeyInfo" unless key_info
+        # Build KeyInfo and ObjectInfo first so SignedInfo can find and digest them by ID
+        key_info_node = build_key_info
+        raise SignatureError, "Missing KeyInfo" unless key_info_node
 
-        signature_node.add_child(key_info)
+        signature_node.add_child(key_info_node)
 
-        # Add ObjectInfo so SignedInfo can digest SignedProperties by ID
-        object_info = build_object_info
-        raise SignatureError, "Missing QualifyingProperties" unless object_info
+        object_info_node = build_object_info
+        raise SignatureError, "Missing QualifyingProperties" unless object_info_node
 
-        signature_node.add_child(object_info)
+        signature_node.add_child(object_info_node)
 
         # Build SignedInfo (now it can find KeyInfo and SignedProperties in the DOM)
-        signed_info = build_signed_info
-        raise SignatureError, "Missing SignedInfo" unless signed_info
+        signed_info_node = build_signed_info
+        raise SignatureError, "Missing SignedInfo" unless signed_info_node
 
-        signature_node.add_child(signed_info)
-
-        # Canonicalize SignedInfo and compute signature
-        canonicalized_signed_info = canonicalize(signed_info)
+        # Canonicalize SignedInfo and compute signature before rearranging
+        canonicalized_signed_info = canonicalize(signed_info_node)
         signature_value = calculate_signature(canonicalized_signed_info)
-
-        # Add SignatureValue element
         signature_value_node = build_signature_value_node(signature_value)
+
+        # Rearrange children to match XML-DSIG schema order:
+        # SignedInfo → SignatureValue → KeyInfo → Object
+        signature_node.children.each(&:remove)
+        signature_node.add_child(signed_info_node)
         signature_node.add_child(signature_value_node)
+        signature_node.add_child(key_info_node)
+        signature_node.add_child(object_info_node)
 
         # Validate the final structure
         validate_xades_structure(signature_node)
