@@ -8,7 +8,7 @@ module Facturae
     end
 
     def build(xml)
-      xml.Invoices(xmlns: "") do |i_xml|
+      xml.Invoices do |i_xml|
         build_invoices(i_xml, @invoices)
       end
     end
@@ -109,7 +109,14 @@ module Facturae
         xml.UnitPriceWithoutTax invoice_line.unit_price_without_tax
         xml.TotalCost invoice_line.total_cost
         xml.GrossAmount invoice_line.gross_amount
-        xml.ArticleCode invoice_line.article_code
+        build_line_taxes_outputs(xml, invoice_line.taxes_output)
+        xml.ArticleCode invoice_line.article_code if invoice_line.article_code
+      end
+    end
+
+    def build_line_taxes_outputs(xml, taxes)
+      xml.TaxesOutputs do
+        taxes.each { |tax| build_tax(xml, tax) }
       end
     end
   end

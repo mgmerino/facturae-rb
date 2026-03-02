@@ -13,7 +13,7 @@ module Facturae
       include Utils
 
       C14N_METHOD_ALGORITHM = "http://www.w3.org/TR/2001/REC-xml-c14n-20010315"
-      SIGNATURE_METHOD_ALGORITHM = "http://www.w3.org/2000/09/xmldsig#rsa-sha1"
+      SIGNATURE_METHOD_ALGORITHM = "http://www.w3.org/2001/04/xmldsig-more#rsa-sha512"
       TRANSFORM_ALGORITHM = "http://www.w3.org/2000/09/xmldsig#enveloped-signature"
       DIGEST_METHOD_ALGORITHM = "http://www.w3.org/2001/04/xmlenc#sha512"
       SIGNED_PROPERTIES_TYPE = "http://uri.etsi.org/01903#SignedProperties"
@@ -27,10 +27,9 @@ module Facturae
       def initialize(doc, signing_ids)
         @doc = doc
         @signed_info_id = signing_ids[:signed_info_id]
-        @signature_signed_properties_id = signing_ids[:signature_signed_properties_id]
-        @signed_properties_id = "SignedPropertiesID#{rand_id}"
-        @cert_uri = "#Certificate#{rand_id}"
-        @ref_id = "Reference-ID-#{rand_id}"
+        @signed_properties_id = signing_ids[:signed_properties_id]
+        @certificate_id = signing_ids[:certificate_id]
+        @reference_id = signing_ids[:reference_id]
       end
 
       def build
@@ -40,22 +39,21 @@ module Facturae
 
         # Signed properties reference
         signed_info.add_child(
-          build_reference(id: @signature_signed_properties_id,
-                          type: SIGNED_PROPERTIES_TYPE,
-                          uri: @signature_signed_properties_id,
-                          node_to_digest: find_node_by_id(@signature_signed_properties_id))
+          build_reference(type: SIGNED_PROPERTIES_TYPE,
+                          uri: "##{@signed_properties_id}",
+                          node_to_digest: find_node_by_id(@signed_properties_id))
         )
 
         # Certificate reference
         signed_info.add_child(
-          build_reference(uri: @cert_uri,
-                          node_to_digest: find_node_by_id(@cert_uri.sub("#", "")))
+          build_reference(uri: "##{@certificate_id}",
+                          node_to_digest: find_node_by_id(@certificate_id))
         )
 
         # Document reference - this needs to be the last reference
         # because it includes a transform that affects the whole document
         signed_info.add_child(
-          build_reference(id: @ref_id,
+          build_reference(id: @reference_id,
                           type: REFERENCE_ID_TYPE,
                           include_transform: true,
                           node_to_digest: @doc.root)
@@ -120,19 +118,17 @@ module Facturae
       def encoded_digest(node)
         return "" unless node
 
-        # Create a new document for the node to avoid modifying the original
-        temp_doc = Nokogiri::XML::Document.new
-        temp_doc.root = node.dup
-
-        # If this is the document reference (has transforms),
-        # apply the enveloped signature transform
         if node == @doc.root
-          # Remove any existing signatures before calculating digest
+          # Enveloped signature transform: remove Signature, then canonicalize whole document
+          temp_doc = @doc.dup
           temp_doc.xpath("//ds:Signature", NAMESPACES).each(&:remove)
+          canonicalized = temp_doc.canonicalize(Nokogiri::XML::XML_C14N_1_0)
+        else
+          # Canonicalize in-place as a subtree so ancestor namespace declarations
+          # (xmlns:ds, xmlns:fe, xmlns:xades) are included — matching what a
+          # standard XML-DSIG verifier will produce.
+          canonicalized = node.canonicalize(Nokogiri::XML::XML_C14N_1_0)
         end
-
-        # Canonicalize the node
-        canonicalized = temp_doc.canonicalize(Nokogiri::XML::XML_C14N_1_0)
 
         # Calculate SHA-512 digest and encode in Base64
         digest = calculate_sha512_digest(canonicalized)

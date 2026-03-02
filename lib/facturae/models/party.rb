@@ -5,6 +5,8 @@ module Facturae
   # @attr [String] tax_id The tax identification number.
   # @attr [Facturae::Subject] subject The subject.
   class Party
+    include Validatable
+
     NATURAL_PERSON = "F"
     LEGAL_ENTITY = "J"
     PARTY_TYPES = [NATURAL_PERSON, LEGAL_ENTITY].freeze
@@ -27,23 +29,15 @@ module Facturae
       @subject = subject
     end
 
-    def valid?
-      return false unless tax_identification_valid?
-      return false unless subject_valid?
+    private
 
-      true
-    end
-
-    def tax_identification_valid?
-      return false unless PARTY_TYPES.include?(@tax_identification[:person_type_code])
-      return false unless TAX_TYPES.include?(@tax_identification[:residence_type_code])
-      return false unless @tax_identification[:tax_id_number].is_a?(String)
-
-      true
-    end
-
-    def subject_valid?
-      subject.valid?
+    def validate
+      super
+      tid = @tax_identification
+      add_error("person_type_code must be F or J") unless PARTY_TYPES.include?(tid[:person_type_code])
+      add_error("residence_type_code must be R, E, or U") unless TAX_TYPES.include?(tid[:residence_type_code])
+      add_error("tax_id_number must be a String") unless tid[:tax_id_number].is_a?(String)
+      validate_child("subject", @subject)
     end
   end
 end

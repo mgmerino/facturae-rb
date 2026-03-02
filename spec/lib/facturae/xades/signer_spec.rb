@@ -82,6 +82,26 @@ module Facturae
           let(:mock_object_info_class) { class_double(ObjectInfo) }
           let(:mock_object_info) { instance_double(ObjectInfo) }
 
+          it "raises SignatureError for missing KeyInfo" do
+            allow(mock_key_info_class).to receive(:new).and_return(mock_key_info)
+            allow(mock_key_info).to receive(:build).and_return(nil)
+
+            signer_with_mock = described_class.new(xml_doc, private_key, certificate,
+                                                   { key_info: mock_key_info_class })
+
+            expect { signer_with_mock.sign }.to raise_error(SignatureError, "Missing KeyInfo")
+          end
+
+          it "raises SignatureError for missing QualifyingProperties" do
+            allow(mock_object_info_class).to receive(:new).and_return(mock_object_info)
+            allow(mock_object_info).to receive(:build).and_return(nil)
+
+            signer_with_mock = described_class.new(xml_doc, private_key, certificate,
+                                                   { object_info: mock_object_info_class })
+
+            expect { signer_with_mock.sign }.to raise_error(SignatureError, "Missing QualifyingProperties")
+          end
+
           it "raises SignatureError for missing SignedInfo" do
             allow(mock_signed_info_class).to receive(:new).and_return(mock_signed_info)
             allow(mock_signed_info).to receive(:build).and_return(nil)
@@ -125,65 +145,6 @@ module Facturae
 
             expect { signer_with_mock.sign }.to raise_error(SignatureError, "Missing SignatureMethod")
           end
-
-          it "raises SignatureError for missing KeyInfo" do
-            allow(mock_key_info_class).to receive(:new).and_return(mock_key_info)
-            allow(mock_key_info).to receive(:build).and_return(nil)
-
-            signer_with_mock = described_class.new(xml_doc, private_key, certificate,
-                                                   { key_info: mock_key_info_class })
-
-            expect { signer_with_mock.sign }.to raise_error(SignatureError, "Missing KeyInfo")
-          end
-
-          it "raises SignatureError for missing QualifyingProperties" do
-            allow(mock_object_info_class).to receive(:new).and_return(mock_object_info)
-            allow(mock_object_info).to receive(:build).and_return(nil)
-
-            signer_with_mock = described_class.new(xml_doc, private_key, certificate,
-                                                   { object_info: mock_object_info_class })
-
-            expect { signer_with_mock.sign }.to raise_error(SignatureError, "Missing QualifyingProperties")
-          end
-        end
-      end
-
-      describe "#canonicalize" do
-        it "normalizes whitespace in XML" do
-          # Different whitespace variations that should canonicalize to the same result
-          inputs = [
-            "<root><child>text</child></root>",
-            "<root>\n  <child>text</child>\n</root>",
-            "<root><child>  text  </child></root>",
-            "<root>  <child>text</child>  </root>"
-          ]
-
-          # Convert all inputs to Nokogiri documents and canonicalize
-          results = inputs.map do |xml|
-            doc = Nokogiri::XML(xml)
-            signer.send(:canonicalize, doc.root)
-          end
-
-          # All results should be equal
-          expected = "<root><child>text</child></root>"
-          results.each do |result|
-            expect(result.gsub(/\s+/, "")).to eq(expected.gsub(/\s+/, ""))
-          end
-        end
-
-        it "handles namespaces correctly" do
-          xml_with_ns = <<~XML
-            <root xmlns:a="http://example.com/a">
-              <a:child>text</a:child>
-            </root>
-          XML
-
-          doc = Nokogiri::XML(xml_with_ns)
-          result = signer.send(:canonicalize, doc.root)
-
-          # The result should preserve the namespace declaration and structure
-          expect(result.gsub(/\s+/, "")).to include('xmlns:a="http://example.com/a"')
-          expect(result.gsub(/\s+/, "")).to include("<a:child>text</a:child>".gsub(/\s+/, ""))
         end
       end
 

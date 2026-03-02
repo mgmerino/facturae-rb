@@ -28,5 +28,31 @@ module Facturae
         end
       end
     end
+
+    describe "#errors" do
+      it "returns empty array when valid" do
+        tax.valid?
+        expect(tax.errors).to be_empty
+      end
+
+      it "returns error for invalid tax_type_code" do
+        tax.tax_type_code = "ZZ"
+        tax.valid?
+        expect(tax.errors).to include("tax_type_code is not a valid tax type")
+      end
+
+      it "returns error when tax_rate is not a Float" do
+        tax.tax_rate = "bad"
+        tax.valid?
+        expect(tax.errors).to include("tax_rate must be a Float")
+      end
+
+      it "returns multiple errors" do
+        tax.tax_type_code = nil
+        tax.tax_rate = nil
+        tax.valid?
+        expect(tax.errors).to include("tax_type_code is not a valid tax type", "tax_rate must be a Float")
+      end
+    end
   end
 end

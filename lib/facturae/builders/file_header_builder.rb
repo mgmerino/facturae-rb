@@ -16,7 +16,7 @@ module Facturae
       # (blame instance_eval: https://github.com/sparklemotion/nokogiri/blob/main/lib/nokogiri/xml/builder.rb#L329)
       batch_hash = file_header.batch
 
-      xml.FileHeader(xmlns: "") do
+      xml.FileHeader do
         xml.SchemaVersion(file_header.schema_version)
         xml.Modality(file_header.modality)
         xml.InvoiceIssuerType(file_header.invoice_issuer_type)

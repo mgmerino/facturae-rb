@@ -6,6 +6,8 @@ module Facturae
   # @attr [Float] tax_rate The tax rate.
   # @attr [Float] taxable_base The taxable base.
   class Tax
+    include Validatable
+
     TAX_IVA = "01"
     TAX_IPSI = "02"
     TAX_IGIC = "03"
@@ -54,13 +56,14 @@ module Facturae
       @tax_type_code = tax_type_code
     end
 
-    def valid?
-      return false unless TAXES_TYPES.include?(@tax_type_code)
-      return false unless @tax_rate.is_a?(Float)
-      return false unless @tax_amount.is_a?(Float)
-      return false unless @taxable_base.is_a?(Float)
+    private
 
-      true
+    def validate
+      super
+      add_error("tax_type_code is not a valid tax type") unless TAXES_TYPES.include?(@tax_type_code)
+      add_error("tax_rate must be a Float") unless @tax_rate.is_a?(Float)
+      add_error("tax_amount must be a Float") unless @tax_amount.is_a?(Float)
+      add_error("taxable_base must be a Float") unless @taxable_base.is_a?(Float)
     end
   end
 end

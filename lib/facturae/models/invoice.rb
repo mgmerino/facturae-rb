@@ -9,6 +9,13 @@ module Facturae
   # @attr [Array<Facturae::Tax>] taxes_withheld The taxes withheld.
   # @attr [Array<Facturae::InvoiceLine>] invoice_line The invoice lines.
   class Invoice
+    include Validatable
+
+    INVOICE_HEADER_KEYS = %i[invoice_number invoice_series_code invoice_document_type invoice_class].freeze
+    ISSUE_DATA_KEYS = %i[issue_date language_name invoice_currency_code tax_currency_code].freeze
+    TOTALS_KEYS = %i[total_gross_amount total_gross_amount_before_taxes total_tax_outputs total_taxes_withheld
+                     invoice_total total_outstanding_amount total_executable_amount].freeze
+
     attr_accessor :invoice_header,
                   :issue_data,
                   :totals,
@@ -61,60 +68,23 @@ module Facturae
       @taxes_withheld << tax
     end
 
-    def valid?
-      return false unless invoice_header_valid?
-      return false unless issue_data_valid?
-      return false unless totals_valid?
-      return false unless taxes_output_valid?
-      return false unless taxes_withheld_valid?
-      return false unless invoice_line_valid?
-
-      true
-    end
-
     private
 
-    def invoice_header_valid?
-      return false unless @invoice_header.keys.all? do |key|
-        %i[invoice_number invoice_series_code invoice_document_type invoice_class].include?(key)
+    def validate
+      super
+      validate_hash_keys("invoice_header", @invoice_header, INVOICE_HEADER_KEYS)
+      validate_hash_keys("issue_data", @issue_data, ISSUE_DATA_KEYS)
+      validate_hash_keys("totals", @totals, TOTALS_KEYS)
+      validate_children("taxes_output", @taxes_output)
+      validate_children("taxes_withheld", @taxes_withheld)
+      validate_children("invoice_lines", @invoice_lines)
+    end
+
+    def validate_hash_keys(name, hash, allowed_keys)
+      invalid_keys = hash.keys - allowed_keys
+      invalid_keys.each do |key|
+        add_error("#{name} contains unknown key: #{key}")
       end
-
-      true
-    end
-
-    def issue_data_valid?
-      return false unless @issue_data.keys.all? do |key|
-        %i[issue_date language_name invoice_currency_code tax_currency_code].include?(key)
-      end
-
-      true
-    end
-
-    def totals_valid?
-      return false unless @totals.keys.all? do |key|
-        %i[total_gross_amount total_gross_amount_before_taxes total_tax_outputs total_taxes_withheld invoice_total
-           total_outstanding_amount total_executable_amount].include?(key)
-      end
-
-      true
-    end
-
-    def taxes_output_valid?
-      return false unless @taxes_output.all?(&:valid?)
-
-      true
-    end
-
-    def taxes_withheld_valid?
-      return false unless @taxes_withheld.all?(&:valid?)
-
-      true
-    end
-
-    def invoice_line_valid?
-      return false unless @invoice_lines.all?(&:valid?)
-
-      true
     end
   end
 end

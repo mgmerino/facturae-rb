@@ -9,7 +9,7 @@ module Facturae
     end
 
     def build(xml)
-      xml.Parties(xmlns: "") do
+      xml.Parties do
         xml.SellerParty do
           build_party(xml, @seller_party)
         end
@@ -43,7 +43,7 @@ module Facturae
       else
         xml.LegalEntity do
           xml.CorporateName subject_obj.name_field1
-          xml.TradeName subject_obj.name_field2
+          xml.TradeName subject_obj.name_field2 if subject_obj.name_field2
           build_address_in_spain(xml, subject_obj.address_in_spain)
           build_overseas_address(xml, subject_obj.overseas_address)
         end

@@ -47,5 +47,37 @@ module Facturae
         end
       end
     end
+
+    describe "#errors" do
+      it "returns empty array when valid" do
+        address.valid?
+        expect(address.errors).to be_empty
+      end
+
+      it "returns error when address is nil" do
+        address.address = nil
+        address.valid?
+        expect(address.errors).to include("address is required")
+      end
+
+      it "returns error when country_code is invalid" do
+        address.country_code = "USA"
+        address.valid?
+        expect(address.errors).to include("country_code is not a valid EU country code")
+      end
+
+      it "returns error when town is nil for ESP" do
+        address.town = nil
+        address.valid?
+        expect(address.errors).to include("town is required when country_code is ESP")
+      end
+
+      it "returns multiple errors" do
+        address.address = nil
+        address.country_code = "USA"
+        address.valid?
+        expect(address.errors).to include("address is required", "country_code is not a valid EU country code")
+      end
+    end
   end
 end
