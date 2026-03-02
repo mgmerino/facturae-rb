@@ -8,6 +8,8 @@ module Facturae
   # @attr [String] province The province.
   # @attr [String] country_code The country code.
   class Address
+    include Validatable
+
     ESP_CC = "ESP"
     COUNTRY_CODES = %w[AUT BEL BGR CYP CZE DEU DNK ESP EST
                        FIN FRA GRC HRV HUN IRL ITA LTU LUX
@@ -27,20 +29,16 @@ module Facturae
       @country_code = country_code
     end
 
-    def valid?
-      return false unless all_properties_present?
-      return false unless COUNTRY_CODES.include?(@country_code)
-      return false if @country_code == ESP_CC && @town.nil?
-
-      true
-    end
-
     private
 
-    def all_properties_present?
-      return true unless (@address && @post_code && @province && @country_code).nil?
-
-      false
+    def validate
+      super
+      add_error("address is required") unless @address
+      add_error("post_code is required") unless @post_code
+      add_error("province is required") unless @province
+      add_error("country_code is required") unless @country_code
+      add_error("country_code is not a valid EU country code") if @country_code && !COUNTRY_CODES.include?(@country_code)
+      add_error("town is required when country_code is ESP") if @country_code == ESP_CC && @town.nil?
     end
   end
 end
