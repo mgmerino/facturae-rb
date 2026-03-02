@@ -28,7 +28,7 @@ module Facturae
       end
       let(:valid_party) do
         described_class.new(person_type_code: "F", residence_type_code: "R",
-                            tax_id_number: "A12345678", subject: valid_subject)
+                            tax_id_number: "12345678Z", subject: valid_subject)
       end
 
       it "returns empty array when valid" do
