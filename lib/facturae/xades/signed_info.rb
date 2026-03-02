@@ -118,19 +118,17 @@ module Facturae
       def encoded_digest(node)
         return "" unless node
 
-        # Create a new document for the node to avoid modifying the original
-        temp_doc = Nokogiri::XML::Document.new
-        temp_doc.root = node.dup
-
-        # If this is the document reference (has transforms),
-        # apply the enveloped signature transform
         if node == @doc.root
-          # Remove any existing signatures before calculating digest
+          # Enveloped signature transform: remove Signature, then canonicalize whole document
+          temp_doc = @doc.dup
           temp_doc.xpath("//ds:Signature", NAMESPACES).each(&:remove)
+          canonicalized = temp_doc.canonicalize(Nokogiri::XML::XML_C14N_1_0)
+        else
+          # Canonicalize in-place as a subtree so ancestor namespace declarations
+          # (xmlns:ds, xmlns:fe, xmlns:xades) are included — matching what a
+          # standard XML-DSIG verifier will produce.
+          canonicalized = node.canonicalize(Nokogiri::XML::XML_C14N_1_0)
         end
-
-        # Canonicalize the node
-        canonicalized = temp_doc.canonicalize(Nokogiri::XML::XML_C14N_1_0)
 
         # Calculate SHA-512 digest and encode in Base64
         digest = calculate_sha512_digest(canonicalized)

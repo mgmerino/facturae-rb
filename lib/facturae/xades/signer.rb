@@ -102,8 +102,13 @@ module Facturae
         signed_info_node = build_signed_info
         raise SignatureError, "Missing SignedInfo" unless signed_info_node
 
-        # Canonicalize SignedInfo and compute signature before rearranging
-        canonicalized_signed_info = canonicalize(signed_info_node)
+        # Add SignedInfo to Signature BEFORE canonicalizing so it inherits
+        # the ds: namespace context from its parent. This ensures the canonical
+        # form includes xmlns:ds, matching what a verifier will produce.
+        signature_node.add_child(signed_info_node)
+
+        # Canonicalize SignedInfo in-place (as a subtree, not extracted)
+        canonicalized_signed_info = signed_info_node.canonicalize(Nokogiri::XML::XML_C14N_1_0)
         signature_value = calculate_signature(canonicalized_signed_info)
         signature_value_node = build_signature_value_node(signature_value)
 
