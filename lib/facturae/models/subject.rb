@@ -8,6 +8,8 @@ module Facturae
   # @attr [Facturae::Address] address_in_spain The address in Spain.
   # @attr [Facturae::Address] overseas_address The overseas address. Optional.
   class Subject
+    include Validatable
+
     INDIVIDUAL = :individual
     LEGAL = :legal
     SUBJECT_TYPES = [INDIVIDUAL, LEGAL].freeze
@@ -27,14 +29,15 @@ module Facturae
       @address_in_spain = address_in_spain
     end
 
-    def valid?
-      return false unless SUBJECT_TYPES.include?(@type)
-      return false unless @name_field1.is_a?(String)
-      return false unless @name_field2.is_a?(String)
-      return false unless @address_in_spain.valid?
-      return false unless @overseas_address.nil? || @overseas_address.valid?
+    private
 
-      true
+    def validate
+      super
+      add_error("type must be :individual or :legal") unless SUBJECT_TYPES.include?(@type)
+      add_error("name_field1 must be a String") unless @name_field1.is_a?(String)
+      add_error("name_field2 must be a String") unless @name_field2.is_a?(String)
+      validate_child("address_in_spain", @address_in_spain)
+      validate_child("overseas_address", @overseas_address)
     end
   end
 end
