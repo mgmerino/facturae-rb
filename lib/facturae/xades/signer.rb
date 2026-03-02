@@ -136,7 +136,6 @@ module Facturae
         signature = @xml_doc.create_element("ds:Signature")
         signature["Id"] = @signature_id
         signature["xmlns:xades"] = XADES_NAMESPACE
-        signature["xmlns:ds"] = XMLDSIG_NAMESPACE
 
         signature
       end

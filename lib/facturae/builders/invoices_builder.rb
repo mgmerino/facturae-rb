@@ -8,7 +8,7 @@ module Facturae
     end
 
     def build(xml)
-      xml.Invoices(xmlns: "") do |i_xml|
+      xml.Invoices do |i_xml|
         build_invoices(i_xml, @invoices)
       end
     end
