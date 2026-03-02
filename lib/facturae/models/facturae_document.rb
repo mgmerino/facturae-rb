@@ -7,6 +7,8 @@ module Facturae
   # @attr [Facturae::Party] buyer_party The buyer party.
   # @attr [Array<Facturae::Invoice>] invoices The invoices.
   class FacturaeDocument
+    include Validatable
+
     attr_accessor :file_header,
                   :seller_party,
                   :buyer_party,
@@ -23,14 +25,15 @@ module Facturae
       @invoices << invoice
     end
 
-    def valid?
-      return false if @invoices.empty?
-      return false if @invoices.any? { |invoice| !invoice.valid? }
-      return false unless @file_header.valid?
-      return false unless @seller_party.valid?
-      return false unless @buyer_party.valid?
+    private
 
-      true
+    def validate
+      super
+      add_error("invoices must not be empty") if @invoices.empty?
+      validate_children("invoices", @invoices)
+      validate_child("file_header", @file_header)
+      validate_child("seller_party", @seller_party)
+      validate_child("buyer_party", @buyer_party)
     end
   end
 end
