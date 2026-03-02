@@ -200,6 +200,41 @@ module Facturae
           expect(cert_digest.content).not_to be_empty
         end
 
+        it "produces cryptographically verifiable reference digests" do
+          signed_info = xml_doc.at_xpath("//ds:SignedInfo", Signer::NAMESPACES)
+          references = signed_info.xpath("ds:Reference", Signer::NAMESPACES)
+
+          references.each do |ref|
+            uri = ref["URI"]
+            stored_digest = ref.at_xpath("ds:DigestValue", Signer::NAMESPACES).content
+            transform = ref.at_xpath("ds:Transforms/ds:Transform", Signer::NAMESPACES)
+
+            if transform && transform["Algorithm"] == "http://www.w3.org/2000/09/xmldsig#enveloped-signature"
+              temp_doc = xml_doc.dup
+              temp_doc.xpath("//ds:Signature", Signer::NAMESPACES).each(&:remove)
+              canonicalized = temp_doc.canonicalize(Nokogiri::XML::XML_C14N_1_0)
+            else
+              target_id = uri.sub("#", "")
+              target = xml_doc.at_xpath("//*[@Id='#{target_id}']")
+              canonicalized = target.canonicalize(Nokogiri::XML::XML_C14N_1_0)
+            end
+
+            computed = Base64.strict_encode64(OpenSSL::Digest::SHA512.digest(canonicalized))
+            expect(computed).to eq(stored_digest), "Digest mismatch for reference URI=#{uri}"
+          end
+        end
+
+        it "produces a cryptographically verifiable SignatureValue" do
+          signed_info = xml_doc.at_xpath("//ds:SignedInfo", Signer::NAMESPACES)
+          c14n = signed_info.canonicalize(Nokogiri::XML::XML_C14N_1_0)
+
+          sig_b64 = xml_doc.at_xpath("//ds:SignatureValue", Signer::NAMESPACES).content.gsub(/\s/, "")
+          sig_bytes = Base64.decode64(sig_b64)
+
+          verified = certificate.public_key.verify(OpenSSL::Digest.new("SHA512"), sig_bytes, c14n)
+          expect(verified).to be true
+        end
+
         it "produces valid XML that can be parsed" do
           signed_xml = xml_doc.to_xml
           reparsed = Nokogiri::XML(signed_xml)
