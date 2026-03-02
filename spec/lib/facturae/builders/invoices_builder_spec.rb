@@ -30,7 +30,7 @@ module Facturae
       expect(xml.to_xml).to eq(
         <<~XML
           <?xml version="1.0"?>
-          <Invoices xmlns="">
+          <Invoices>
             <Invoice>
               <InvoiceHeader>
                 <InvoiceNumber>unset</InvoiceNumber>

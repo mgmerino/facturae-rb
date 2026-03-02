@@ -123,8 +123,8 @@ module Facturae
         expect(xml).to eq(
           <<~XML
             <?xml version="1.0" encoding="UTF-8"?>
-            <Facturae xmlns="http://www.facturae.gob.es/formato/Versiones/Facturaev3_2_2.xml">
-              <FileHeader xmlns="">
+            <fe:Facturae xmlns:fe="http://www.facturae.gob.es/formato/Versiones/Facturaev3_2_2.xml" xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+              <FileHeader>
                 <SchemaVersion>3.2.2</SchemaVersion>
                 <Modality>I</Modality>
                 <InvoiceIssuerType>EM</InvoiceIssuerType>
@@ -143,7 +143,7 @@ module Facturae
                   <InvoiceCurrencyCode>EUR</InvoiceCurrencyCode>
                 </Batch>
               </FileHeader>
-              <Parties xmlns="">
+              <Parties>
                 <SellerParty>
                   <TaxIdentification>
                     <PersonTypeCode>J</PersonTypeCode>
@@ -181,7 +181,7 @@ module Facturae
                   </Individual>
                 </BuyerParty>
               </Parties>
-              <Invoices xmlns="">
+              <Invoices>
                 <Invoice>
                   <InvoiceHeader>
                     <InvoiceNumber>12345</InvoiceNumber>
@@ -242,7 +242,7 @@ module Facturae
                   </Items>
                 </Invoice>
               </Invoices>
-            </Facturae>
+            </fe:Facturae>
           XML
         )
       end
