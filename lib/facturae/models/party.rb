@@ -33,15 +33,10 @@ module Facturae
 
     def validate
       super
-      unless PARTY_TYPES.include?(@tax_identification[:person_type_code])
-        add_error("person_type_code must be F or J")
-      end
-      unless TAX_TYPES.include?(@tax_identification[:residence_type_code])
-        add_error("residence_type_code must be R, E, or U")
-      end
-      unless @tax_identification[:tax_id_number].is_a?(String)
-        add_error("tax_id_number must be a String")
-      end
+      tid = @tax_identification
+      add_error("person_type_code must be F or J") unless PARTY_TYPES.include?(tid[:person_type_code])
+      add_error("residence_type_code must be R, E, or U") unless TAX_TYPES.include?(tid[:residence_type_code])
+      add_error("tax_id_number must be a String") unless tid[:tax_id_number].is_a?(String)
       validate_child("subject", @subject)
     end
   end

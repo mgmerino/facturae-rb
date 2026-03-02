@@ -33,12 +33,23 @@ module Facturae
 
     def validate
       super
+      validate_required_fields
+      validate_country_code
+      add_error("town is required when country_code is ESP") if @country_code == ESP_CC && @town.nil?
+    end
+
+    def validate_required_fields
       add_error("address is required") unless @address
       add_error("post_code is required") unless @post_code
       add_error("province is required") unless @province
       add_error("country_code is required") unless @country_code
-      add_error("country_code is not a valid EU country code") if @country_code && !COUNTRY_CODES.include?(@country_code)
-      add_error("town is required when country_code is ESP") if @country_code == ESP_CC && @town.nil?
+    end
+
+    def validate_country_code
+      return unless @country_code
+      return if COUNTRY_CODES.include?(@country_code)
+
+      add_error("country_code is not a valid EU country code")
     end
   end
 end

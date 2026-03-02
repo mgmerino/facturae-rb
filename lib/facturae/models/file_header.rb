@@ -53,8 +53,7 @@ module Facturae
     end
 
     def validate_batch
-      invalid_keys = @batch.keys - BATCH_KEYS
-      invalid_keys.each { |key| add_error("batch contains unknown key: #{key}") }
+      (@batch.keys - BATCH_KEYS).each { |key| add_error("batch contains unknown key: #{key}") }
       add_error("batch.invoices_count must be an Integer") unless @batch[:invoices_count].is_a?(Integer)
       add_error("batch.total_invoice_amount must be a Float") unless @batch[:total_invoice_amount].is_a?(Float)
       add_error("batch.total_tax_outputs must be a Float") unless @batch[:total_tax_outputs].is_a?(Float)

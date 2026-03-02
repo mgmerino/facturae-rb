@@ -15,19 +15,27 @@ module Facturae
     XMLDSIG_NAMESPACE = "http://www.w3.org/2000/09/xmldsig#"
 
     def to_xml
-      builder = Nokogiri::XML::Builder.new(encoding: "UTF-8") do |xml|
+      doc = Nokogiri::XML(build_xml_string)
+      apply_namespaces(doc)
+      doc.to_xml
+    end
+
+    private
+
+    def build_xml_string
+      Nokogiri::XML::Builder.new(encoding: "UTF-8") do |xml|
         xml.Facturae do
           FileHeaderBuilder.new(@facturae.file_header).build(xml)
           PartiesBuilder.new(@facturae.seller_party, @facturae.buyer_party).build(xml)
           InvoicesBuilder.new(@facturae.invoices).build(xml)
         end
-      end
+      end.to_xml
+    end
 
-      doc = Nokogiri::XML(builder.to_xml)
+    def apply_namespaces(doc)
       fe_ns = doc.root.add_namespace_definition("fe", FACTURAE_NAMESPACE)
       doc.root.namespace = fe_ns
       doc.root.add_namespace_definition("ds", XMLDSIG_NAMESPACE)
-      doc.to_xml
     end
   end
 end

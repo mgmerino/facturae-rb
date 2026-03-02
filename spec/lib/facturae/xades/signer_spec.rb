@@ -148,45 +148,6 @@ module Facturae
         end
       end
 
-      describe "#canonicalize" do
-        it "normalizes whitespace in XML" do
-          # Different whitespace variations that should canonicalize to the same result
-          inputs = [
-            "<root><child>text</child></root>",
-            "<root>\n  <child>text</child>\n</root>",
-            "<root><child>  text  </child></root>",
-            "<root>  <child>text</child>  </root>"
-          ]
-
-          # Convert all inputs to Nokogiri documents and canonicalize
-          results = inputs.map do |xml|
-            doc = Nokogiri::XML(xml)
-            signer.send(:canonicalize, doc.root)
-          end
-
-          # All results should be equal
-          expected = "<root><child>text</child></root>"
-          results.each do |result|
-            expect(result.gsub(/\s+/, "")).to eq(expected.gsub(/\s+/, ""))
-          end
-        end
-
-        it "handles namespaces correctly" do
-          xml_with_ns = <<~XML
-            <root xmlns:a="http://example.com/a">
-              <a:child>text</a:child>
-            </root>
-          XML
-
-          doc = Nokogiri::XML(xml_with_ns)
-          result = signer.send(:canonicalize, doc.root)
-
-          # The result should preserve the namespace declaration and structure
-          expect(result.gsub(/\s+/, "")).to include('xmlns:a="http://example.com/a"')
-          expect(result.gsub(/\s+/, "")).to include("<a:child>text</a:child>".gsub(/\s+/, ""))
-        end
-      end
-
       describe "#calculate_signature" do
         let(:test_data) { "test data" }
 

@@ -87,7 +87,23 @@ module Facturae
         signature_node = build_signature_node
         @xml_doc.root.add_child(signature_node)
 
-        # Build KeyInfo and ObjectInfo first so SignedInfo can find and digest them by ID
+        key_info_node, object_info_node = build_and_attach_info_nodes(signature_node)
+        signed_info_node = build_and_attach_signed_info(signature_node)
+
+        # Canonicalize SignedInfo in-place (as a subtree, not extracted)
+        canonicalized_signed_info = signed_info_node.canonicalize(Nokogiri::XML::XML_C14N_1_0)
+        signature_value_node = build_signature_value_node(calculate_signature(canonicalized_signed_info))
+
+        reorder_signature_children(signature_node, signed_info_node, signature_value_node,
+                                   key_info_node, object_info_node)
+
+        validate_xades_structure(signature_node)
+        signature_node
+      end
+
+      private
+
+      def build_and_attach_info_nodes(signature_node)
         key_info_node = build_key_info
         raise SignatureError, "Missing KeyInfo" unless key_info_node
 
@@ -97,36 +113,23 @@ module Facturae
         raise SignatureError, "Missing QualifyingProperties" unless object_info_node
 
         signature_node.add_child(object_info_node)
+        [key_info_node, object_info_node]
+      end
 
-        # Build SignedInfo (now it can find KeyInfo and SignedProperties in the DOM)
+      # Build SignedInfo and attach to Signature BEFORE canonicalizing so it
+      # inherits the ds: namespace context, matching what a verifier produces.
+      def build_and_attach_signed_info(signature_node)
         signed_info_node = build_signed_info
         raise SignatureError, "Missing SignedInfo" unless signed_info_node
 
-        # Add SignedInfo to Signature BEFORE canonicalizing so it inherits
-        # the ds: namespace context from its parent. This ensures the canonical
-        # form includes xmlns:ds, matching what a verifier will produce.
         signature_node.add_child(signed_info_node)
-
-        # Canonicalize SignedInfo in-place (as a subtree, not extracted)
-        canonicalized_signed_info = signed_info_node.canonicalize(Nokogiri::XML::XML_C14N_1_0)
-        signature_value = calculate_signature(canonicalized_signed_info)
-        signature_value_node = build_signature_value_node(signature_value)
-
-        # Rearrange children to match XML-DSIG schema order:
-        # SignedInfo → SignatureValue → KeyInfo → Object
-        signature_node.children.each(&:remove)
-        signature_node.add_child(signed_info_node)
-        signature_node.add_child(signature_value_node)
-        signature_node.add_child(key_info_node)
-        signature_node.add_child(object_info_node)
-
-        # Validate the final structure
-        validate_xades_structure(signature_node)
-
-        signature_node
+        signed_info_node
       end
 
-      private
+      def reorder_signature_children(signature_node, signed_info, sig_value, key_info, object_info)
+        signature_node.children.each(&:remove)
+        [signed_info, sig_value, key_info, object_info].each { |n| signature_node.add_child(n) }
+      end
 
       def register_namespaces
         # Add namespaces to the document root if they don't exist
@@ -135,8 +138,6 @@ module Facturae
         end
       end
 
-      # Build the root signature node
-      # @return [Nokogiri::XML::Node]
       def build_signature_node
         signature = @xml_doc.create_element("ds:Signature")
         signature["Id"] = @signature_id
@@ -145,31 +146,13 @@ module Facturae
         signature
       end
 
-      # Canonicalize an XML node using C14N
-      # @param node [Nokogiri::XML::Node] The node to canonicalize
-      # @return [String] The canonicalized XML
-      def canonicalize(node)
-        # Create a new document to avoid modifying the original
-        doc = Nokogiri::XML::Document.new
-        doc.root = node.dup
-
-        # Use exclusive canonicalization without comments
-        # This will handle both whitespace normalization and namespaces properly
-        doc.canonicalize(nil, nil, nil)
-      end
-
       # Calculate the signature value
-      # @param canonicalized_data [String] The canonicalized SignedInfo
-      # @return [String] The Base64-encoded signature
       def calculate_signature(canonicalized_data)
         digest = OpenSSL::Digest.new("SHA512")
         signature = @private_key.sign(digest, canonicalized_data)
         Base64.strict_encode64(signature)
       end
 
-      # Build the SignatureValue node
-      # @param signature_value [String] The Base64-encoded signature value
-      # @return [Nokogiri::XML::Node]
       def build_signature_value_node(signature_value)
         signature_value_node = @xml_doc.create_element("ds:SignatureValue", signature_value)
         signature_value_node["Id"] = @signature_value_id
@@ -193,9 +176,6 @@ module Facturae
                                 { signature_id:, signed_properties_id:, signature_object_id:, reference_id: }).build
       end
 
-      # Validate the complete XAdES structure
-      # @param signature_node [Nokogiri::XML::Node] The signature node to validate
-      # @raise [SignatureError] if any validation fails
       def validate_xades_structure(signature_node)
         validate_signature_attributes(signature_node)
         validate_signed_info(signature_node)
@@ -204,15 +184,11 @@ module Facturae
         validate_qualifying_properties(signature_node)
       end
 
-      # Validate the signature node attributes
-      # @raise [SignatureError] if the Id or namespace is missing
       def validate_signature_attributes(node)
         raise SignatureError, "Missing Signature Id" unless node["Id"] == @signature_id
         raise SignatureError, "Missing XAdES namespace" unless node["xmlns:xades"] == XADES_NAMESPACE
       end
 
-      # Validate the SignedInfo structure
-      # @raise [SignatureError] if any required element is missing or invalid
       def validate_signed_info(signature_node)
         signed_info = signature_node.at_xpath(".//ds:SignedInfo", NAMESPACES)
         raise SignatureError, "Missing SignedInfo" unless signed_info
@@ -233,8 +209,6 @@ module Facturae
         raise SignatureError, "Missing References" unless references.size == 3
       end
 
-      # Validate the SignatureValue
-      # @raise [SignatureError] if the signature value is missing or empty
       def validate_signature_value(signature_node)
         sig_value = signature_node.at_xpath(".//ds:SignatureValue", NAMESPACES)
         raise SignatureError, "Missing SignatureValue" unless sig_value
@@ -242,8 +216,6 @@ module Facturae
         raise SignatureError, "Empty SignatureValue" if sig_value.content.empty?
       end
 
-      # Validate the KeyInfo structure
-      # @raise [SignatureError] if any certificate or key information is missing
       def validate_key_info(signature_node)
         key_info = signature_node.at_xpath(".//ds:KeyInfo", NAMESPACES)
         raise SignatureError, "Missing KeyInfo" unless key_info
@@ -261,8 +233,6 @@ module Facturae
         raise SignatureError, "Missing Exponent" unless key_value.at_xpath(".//ds:Exponent", NAMESPACES)
       end
 
-      # Validate the XAdES QualifyingProperties
-      # @raise [SignatureError] if any required XAdES property is missing
       def validate_qualifying_properties(signature_node)
         object_node = signature_node.at_xpath(".//ds:Object/xades:QualifyingProperties", NAMESPACES)
         raise SignatureError, "Missing QualifyingProperties" unless object_node
@@ -275,8 +245,6 @@ module Facturae
         validate_signed_signature_properties(signed_props)
       end
 
-      # Validate the SignedSignatureProperties
-      # @raise [SignatureError] if any required signature property is missing
       def validate_signed_signature_properties(signed_props)
         sig_props = signed_props.at_xpath(".//xades:SignedSignatureProperties", NAMESPACES)
         raise SignatureError, "Missing SignedSignatureProperties" unless sig_props
@@ -289,15 +257,6 @@ module Facturae
           ".//xades:SignaturePolicyIdentifier", NAMESPACES
         )
         raise SignatureError, "Missing SignerRole" unless sig_props.at_xpath(".//xades:SignerRole", NAMESPACES)
-      end
-
-      def signing_ids
-        {
-          signature_id:,
-          signed_properties_id:,
-          signature_object_id:,
-          reference_id:
-        }
       end
     end
   end
