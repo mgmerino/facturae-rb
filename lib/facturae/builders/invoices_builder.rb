@@ -53,11 +53,10 @@ module Facturae
     def build_totals(xml, totals)
       xml.InvoiceTotals do
         xml.TotalGrossAmount totals[:total_gross_amount]
+        xml.TotalGrossAmountBeforeTaxes totals[:total_gross_amount_before_taxes] || totals[:total_gross_amount]
         xml.TotalTaxOutputs totals[:total_tax_outputs]
         xml.TotalTaxesWithheld totals[:total_taxes_withheld]
         xml.InvoiceTotal totals[:invoice_total]
-        xml.PaymentOnAccount totals[:payment_on_account]
-        xml.PaymentDue totals[:payment_due]
         xml.TotalOutstandingAmount totals[:total_outstanding_amount]
         xml.TotalExecutableAmount totals[:total_executable_amount]
       end
@@ -72,6 +71,8 @@ module Facturae
     end
 
     def build_taxes_withheld(xml, taxes_withheld)
+      return if taxes_withheld.empty?
+
       xml.TaxesWithheld do
         taxes_withheld.each do |tax|
           build_tax(xml, tax)
@@ -106,8 +107,8 @@ module Facturae
         xml.Quantity invoice_line.quantity
         xml.UnitOfMeasure invoice_line.unit_of_measure
         xml.UnitPriceWithoutTax invoice_line.unit_price_without_tax
-        xml.GrossAmount invoice_line.gross_amount
         xml.TotalCost invoice_line.total_cost
+        xml.GrossAmount invoice_line.gross_amount
         xml.ArticleCode invoice_line.article_code
       end
     end

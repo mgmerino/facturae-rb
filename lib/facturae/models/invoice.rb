@@ -36,11 +36,10 @@ module Facturae
       }
       @totals = totals || {
         total_gross_amount: 0.0,
+        total_gross_amount_before_taxes: 0.0,
         total_tax_outputs: 0.0,
         total_taxes_withheld: 0.0,
         invoice_total: 0.0,
-        payment_on_account: 0.0,
-        payment_due: 0.0,
         total_outstanding_amount: 0.0,
         total_executable_amount: 0.0
       }
@@ -93,7 +92,7 @@ module Facturae
 
     def totals_valid?
       return false unless @totals.keys.all? do |key|
-        %i[total_gross_amount total_tax_outputs total_taxes_withheld invoice_total payment_on_account payment_due
+        %i[total_gross_amount total_gross_amount_before_taxes total_tax_outputs total_taxes_withheld invoice_total
            total_outstanding_amount total_executable_amount].include?(key)
       end
 

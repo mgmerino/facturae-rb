@@ -74,11 +74,10 @@ module Facturae
         },
         totals: {
           total_gross_amount: 100.0,
+          total_gross_amount_before_taxes: 100.0,
           total_tax_outputs: 20.0,
           total_taxes_withheld: 0.0,
           invoice_total: 120.0,
-          payment_on_account: 0.0,
-          payment_due: 0.0,
           total_outstanding_amount: 120.0,
           total_executable_amount: 120.0
         },
@@ -222,11 +221,10 @@ module Facturae
                   </TaxesWithheld>
                   <InvoiceTotals>
                     <TotalGrossAmount>100.0</TotalGrossAmount>
+                    <TotalGrossAmountBeforeTaxes>100.0</TotalGrossAmountBeforeTaxes>
                     <TotalTaxOutputs>20.0</TotalTaxOutputs>
                     <TotalTaxesWithheld>0.0</TotalTaxesWithheld>
                     <InvoiceTotal>120.0</InvoiceTotal>
-                    <PaymentOnAccount>0.0</PaymentOnAccount>
-                    <PaymentDue>0.0</PaymentDue>
                     <TotalOutstandingAmount>120.0</TotalOutstandingAmount>
                     <TotalExecutableAmount>120.0</TotalExecutableAmount>
                   </InvoiceTotals>
@@ -236,8 +234,8 @@ module Facturae
                       <Quantity>1.0</Quantity>
                       <UnitOfMeasure>01</UnitOfMeasure>
                       <UnitPriceWithoutTax>100.0</UnitPriceWithoutTax>
-                      <GrossAmount>100.0</GrossAmount>
                       <TotalCost>121.0</TotalCost>
+                      <GrossAmount>100.0</GrossAmount>
                       <ArticleCode>1234567</ArticleCode>
                     </InvoiceLine>
                   </Items>

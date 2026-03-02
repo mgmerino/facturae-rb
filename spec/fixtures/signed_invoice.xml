@@ -84,14 +84,12 @@
           </TaxAmount>
         </Tax>
       </TaxesOutputs>
-      <TaxesWithheld/>
       <InvoiceTotals>
         <TotalGrossAmount>100.0</TotalGrossAmount>
+        <TotalGrossAmountBeforeTaxes>100.0</TotalGrossAmountBeforeTaxes>
         <TotalTaxOutputs/>
         <TotalTaxesWithheld>0.0</TotalTaxesWithheld>
         <InvoiceTotal>121.0</InvoiceTotal>
-        <PaymentOnAccount/>
-        <PaymentDue/>
         <TotalOutstandingAmount>121.0</TotalOutstandingAmount>
         <TotalExecutableAmount>121.0</TotalExecutableAmount>
       </InvoiceTotals>
@@ -101,8 +99,8 @@
           <Quantity>1.0</Quantity>
           <UnitOfMeasure>01</UnitOfMeasure>
           <UnitPriceWithoutTax>100.0</UnitPriceWithoutTax>
-          <GrossAmount>100.0</GrossAmount>
           <TotalCost>100.0</TotalCost>
+          <GrossAmount>100.0</GrossAmount>
           <ArticleCode/>
         </InvoiceLine>
       </Items>

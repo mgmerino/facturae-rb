@@ -70,11 +70,10 @@ module Facturae
               </TaxesWithheld>
               <InvoiceTotals>
                 <TotalGrossAmount>0.0</TotalGrossAmount>
+                <TotalGrossAmountBeforeTaxes>0.0</TotalGrossAmountBeforeTaxes>
                 <TotalTaxOutputs>0.0</TotalTaxOutputs>
                 <TotalTaxesWithheld>0.0</TotalTaxesWithheld>
                 <InvoiceTotal>0.0</InvoiceTotal>
-                <PaymentOnAccount>0.0</PaymentOnAccount>
-                <PaymentDue>0.0</PaymentDue>
                 <TotalOutstandingAmount>0.0</TotalOutstandingAmount>
                 <TotalExecutableAmount>0.0</TotalExecutableAmount>
               </InvoiceTotals>
@@ -84,8 +83,8 @@ module Facturae
                   <Quantity>1.0</Quantity>
                   <UnitOfMeasure>01</UnitOfMeasure>
                   <UnitPriceWithoutTax>1.0</UnitPriceWithoutTax>
-                  <GrossAmount>1.0</GrossAmount>
                   <TotalCost>1.0</TotalCost>
+                  <GrossAmount>1.0</GrossAmount>
                   <ArticleCode>1234567890123</ArticleCode>
                 </InvoiceLine>
               </Items>
