@@ -50,5 +50,24 @@ module Facturae
         end
       end
     end
+
+    describe "#errors" do
+      it "returns empty array when valid" do
+        line.valid?
+        expect(line.errors).to be_empty
+      end
+
+      it "returns error when item_description is not a String" do
+        line.item_description = 123
+        line.valid?
+        expect(line.errors).to include("item_description must be a String")
+      end
+
+      it "returns error when article_code is present but not a String" do
+        line.article_code = 123
+        line.valid?
+        expect(line.errors).to include("article_code must be a String")
+      end
+    end
   end
 end
