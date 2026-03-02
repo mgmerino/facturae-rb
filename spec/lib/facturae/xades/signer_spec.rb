@@ -82,6 +82,26 @@ module Facturae
           let(:mock_object_info_class) { class_double(ObjectInfo) }
           let(:mock_object_info) { instance_double(ObjectInfo) }
 
+          it "raises SignatureError for missing KeyInfo" do
+            allow(mock_key_info_class).to receive(:new).and_return(mock_key_info)
+            allow(mock_key_info).to receive(:build).and_return(nil)
+
+            signer_with_mock = described_class.new(xml_doc, private_key, certificate,
+                                                   { key_info: mock_key_info_class })
+
+            expect { signer_with_mock.sign }.to raise_error(SignatureError, "Missing KeyInfo")
+          end
+
+          it "raises SignatureError for missing QualifyingProperties" do
+            allow(mock_object_info_class).to receive(:new).and_return(mock_object_info)
+            allow(mock_object_info).to receive(:build).and_return(nil)
+
+            signer_with_mock = described_class.new(xml_doc, private_key, certificate,
+                                                   { object_info: mock_object_info_class })
+
+            expect { signer_with_mock.sign }.to raise_error(SignatureError, "Missing QualifyingProperties")
+          end
+
           it "raises SignatureError for missing SignedInfo" do
             allow(mock_signed_info_class).to receive(:new).and_return(mock_signed_info)
             allow(mock_signed_info).to receive(:build).and_return(nil)
@@ -124,26 +144,6 @@ module Facturae
             end
 
             expect { signer_with_mock.sign }.to raise_error(SignatureError, "Missing SignatureMethod")
-          end
-
-          it "raises SignatureError for missing KeyInfo" do
-            allow(mock_key_info_class).to receive(:new).and_return(mock_key_info)
-            allow(mock_key_info).to receive(:build).and_return(nil)
-
-            signer_with_mock = described_class.new(xml_doc, private_key, certificate,
-                                                   { key_info: mock_key_info_class })
-
-            expect { signer_with_mock.sign }.to raise_error(SignatureError, "Missing KeyInfo")
-          end
-
-          it "raises SignatureError for missing QualifyingProperties" do
-            allow(mock_object_info_class).to receive(:new).and_return(mock_object_info)
-            allow(mock_object_info).to receive(:build).and_return(nil)
-
-            signer_with_mock = described_class.new(xml_doc, private_key, certificate,
-                                                   { object_info: mock_object_info_class })
-
-            expect { signer_with_mock.sign }.to raise_error(SignatureError, "Missing QualifyingProperties")
           end
         end
       end

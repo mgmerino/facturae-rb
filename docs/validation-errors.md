@@ -74,3 +74,47 @@ Included by all model classes. Provides:
 - **Modified**: `lib/facturae.rb` — added `require_relative` for the new module
 - **Modified**: All 8 model files in `lib/facturae/models/` — included `Validatable`, replaced `valid?` with private `validate`
 - **Modified**: All 8 spec files in `spec/lib/facturae/models/` — added `#errors` describe blocks
+
+---
+
+# XAdES Signature Fixes (FACe Validator Compliance)
+
+## Overview
+
+The FACe validator (`se-proveedores-face.redsara.es`) rejected invoices signed by facturae-rb with three signature-related errors. Seven bugs were identified by comparing the output against a canonical valid XML.
+
+## Bugs fixed
+
+### Bug 1 — SHA1 → SHA512 signature algorithm
+- `SignatureMethod` and `calculate_signature` now use `rsa-sha512` instead of `rsa-sha1`.
+
+### Bug 2 — Malformed SigPolicyId structure
+- `SigPolicyId/Identifier` now contains the policy URL (not the OID).
+- `Description` is a sibling of `Identifier` (was incorrectly nested as a child).
+
+### Bug 3 — Spurious SigPolicyQualifiers
+- Removed `SigPolicyQualifiers` element entirely (absent in canonical XML).
+
+### Bug 4 — Broken ID wiring between Signer and SignedInfo
+- Signer now passes all IDs (`signed_properties_id`, `certificate_id`, `reference_id`) to SignedInfo.
+- SignedInfo no longer generates its own random IDs — it uses the ones from Signer.
+- URI cross-references use proper `#` prefix (`"#SignedPropertiesID..."`, `"#Certificate..."`).
+
+### Bug 5 — ClaimedRole language
+- Changed `ClaimedRole` from `"supplier"` to `"emisor"`.
+
+### Bug 6 — Wrong MIME type
+- Changed `MimeType` from `"application/xml"` to `"text/xml"`.
+
+### Bug 7 — Empty signed properties digest
+- Reordered `sign` method: KeyInfo and ObjectInfo are now added to the DOM **before** SignedInfo is built, so SignedInfo can find and digest the `SignedProperties` and `KeyInfo` nodes by their `Id` attributes.
+
+## Files changed
+
+| File | Changes |
+|------|---------|
+| `lib/facturae/xades/signer.rb` | Reorder sign method, pass full IDs to SignedInfo, SHA512 algorithm + digest |
+| `lib/facturae/xades/signed_info.rb` | Accept IDs from signer (no random generation), fix URI `#` prefixes, SHA512 algorithm |
+| `lib/facturae/xades/object_info.rb` | Fix SigPolicyId structure, remove SigPolicyQualifiers, `"emisor"`, `"text/xml"` |
+| `spec/lib/facturae/xades/signer_spec.rb` | Reorder mock tests to match new sign method flow |
+| `spec/lib/facturae/xades/signed_info_spec.rb` | Updated constructor to pass all required IDs |

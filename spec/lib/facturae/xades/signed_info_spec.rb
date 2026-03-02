@@ -12,9 +12,14 @@ module Facturae
         XML
       end
       let(:xml_doc) { Nokogiri::XML(xml) }
-      let(:cert_id) { "Certificate#{rand_id}" }
-      let(:ref_doc_id) { "Reference-ID-#{rand_id}" }
-      let(:options) { {} }
+      let(:options) do
+        {
+          signed_info_id: "Signature-SignedInfo-test",
+          signed_properties_id: "SignedPropertiesID-test",
+          certificate_id: "Certificate-test",
+          reference_id: "Reference-ID-test"
+        }
+      end
       let(:signed_info) { SignedInfo.new(xml_doc, options) }
 
       describe "#build" do

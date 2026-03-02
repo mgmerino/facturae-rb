@@ -11,7 +11,7 @@ module Facturae
       OBJECT_DESCRIPTION = "Factura electrónica"
       OBJECT_IDENTIFIER = "urn:oid:1.2.840.10003.5.109.10"
       OBJECT_QUALIFIER = "OIDAsURN"
-      OBJECT_MIME_TYPE = "application/xml"
+      OBJECT_MIME_TYPE = "text/xml"
       SIG_POLICY_URL = "http://www.facturae.es/politica_de_firma_formato_facturae/politica_de_firma_formato_facturae_v3_1.pdf"
       SIG_POLICY_DESCRIPTION = "Política de Firma FacturaE v3.1"
       SIG_POLICY_HASH_DIGEST = "Ohixl6upD6av8N7pEvDABhEL6hM="
@@ -104,7 +104,6 @@ module Facturae
 
         policy_node.add_child(build_sig_policy_id)
         policy_node.add_child(build_sig_policy_hash)
-        policy_node.add_child(build_sig_policy_qualifiers)
         main_node.add_child(policy_node)
 
         main_node
@@ -112,9 +111,7 @@ module Facturae
 
       def build_sig_policy_id
         sig_policy_id = create_xml_element(@doc, "xades:SigPolicyId")
-        identifier = create_xml_element(@doc, "xades:Identifier", OBJECT_IDENTIFIER)
-        identifier.add_child(create_xml_element(@doc, "xades:Description", OBJECT_DESCRIPTION))
-        sig_policy_id.add_child(identifier)
+        sig_policy_id.add_child(create_xml_element(@doc, "xades:Identifier", SIG_POLICY_URL))
         sig_policy_id.add_child(create_xml_element(@doc, "xades:Description", SIG_POLICY_DESCRIPTION))
         sig_policy_id
       end
@@ -126,18 +123,10 @@ module Facturae
         sig_policy_hash
       end
 
-      def build_sig_policy_qualifiers
-        sig_policy_qualifiers = create_xml_element(@doc, "xades:SigPolicyQualifiers")
-        sig_policy_qualifier = create_xml_element(@doc, "xades:SigPolicyQualifier")
-        sig_policy_qualifier.add_child(create_xml_element(@doc, "xades:SPURI", SIG_POLICY_URL))
-        sig_policy_qualifiers.add_child(sig_policy_qualifier)
-        sig_policy_qualifiers
-      end
-
       def build_signer_role_node
         main_node = create_xml_element(@doc, "xades:SignerRole")
         claimed_roles = create_xml_element(@doc, "xades:ClaimedRoles")
-        claimed_roles.add_child(create_xml_element(@doc, "xades:ClaimedRole", "supplier"))
+        claimed_roles.add_child(create_xml_element(@doc, "xades:ClaimedRole", "emisor"))
         main_node.add_child(claimed_roles)
 
         main_node

@@ -37,7 +37,7 @@ module Facturae
       XADES_NAMESPACE = "http://uri.etsi.org/01903/v1.3.2#"
       XMLDSIG_NAMESPACE = "http://www.w3.org/2000/09/xmldsig#"
       C14N_METHOD_ALGORITHM = "http://www.w3.org/TR/2001/REC-xml-c14n-20010315"
-      SIGNATURE_METHOD_ALGORITHM = "http://www.w3.org/2000/09/xmldsig#rsa-sha1"
+      SIGNATURE_METHOD_ALGORITHM = "http://www.w3.org/2001/04/xmldsig-more#rsa-sha512"
 
       NAMESPACES = {
         "ds" => XMLDSIG_NAMESPACE,
@@ -87,33 +87,31 @@ module Facturae
         signature_node = build_signature_node
         @xml_doc.root.add_child(signature_node)
 
-        # Add the SignedInfo element to the signature node
-        signed_info = build_signed_info
-        raise SignatureError, "Missing SignedInfo" unless signed_info
-
-        signature_node.add_child(signed_info)
-
-        # Canonicalize SignedInfo
-        canonicalized_signed_info = canonicalize(signed_info)
-
-        # Calculate the signature
-        signature_value = calculate_signature(canonicalized_signed_info)
-
-        # Add SignatureValue element
-        signature_value_node = build_signature_value_node(signature_value)
-        signature_node.add_child(signature_value_node)
-
-        # Add the KeyInfo element to the signature node
+        # Add KeyInfo first so SignedInfo can digest it by ID
         key_info = build_key_info
         raise SignatureError, "Missing KeyInfo" unless key_info
 
         signature_node.add_child(key_info)
 
-        # Add the ObjectInfo element to the signature node
+        # Add ObjectInfo so SignedInfo can digest SignedProperties by ID
         object_info = build_object_info
         raise SignatureError, "Missing QualifyingProperties" unless object_info
 
         signature_node.add_child(object_info)
+
+        # Build SignedInfo (now it can find KeyInfo and SignedProperties in the DOM)
+        signed_info = build_signed_info
+        raise SignatureError, "Missing SignedInfo" unless signed_info
+
+        signature_node.add_child(signed_info)
+
+        # Canonicalize SignedInfo and compute signature
+        canonicalized_signed_info = canonicalize(signed_info)
+        signature_value = calculate_signature(canonicalized_signed_info)
+
+        # Add SignatureValue element
+        signature_value_node = build_signature_value_node(signature_value)
+        signature_node.add_child(signature_value_node)
 
         # Validate the final structure
         validate_xades_structure(signature_node)
@@ -158,7 +156,7 @@ module Facturae
       # @param canonicalized_data [String] The canonicalized SignedInfo
       # @return [String] The Base64-encoded signature
       def calculate_signature(canonicalized_data)
-        digest = OpenSSL::Digest.new("SHA1")
+        digest = OpenSSL::Digest.new("SHA512")
         signature = @private_key.sign(digest, canonicalized_data)
         Base64.strict_encode64(signature)
       end
@@ -174,7 +172,8 @@ module Facturae
 
       def build_signed_info
         signed_info_builder = @builders[:signed_info] || SignedInfo
-        signed_info_builder.new(@xml_doc, { signed_info_id: }).build
+        signed_info_builder.new(@xml_doc,
+                                { signed_info_id:, signed_properties_id:, certificate_id:, reference_id: }).build
       end
 
       def build_key_info
