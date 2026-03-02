@@ -27,11 +27,11 @@ module Facturae
 
     describe "#valid?" do
       context "when the Facturae document is valid" do
-        let(:invoice) { instance_double(Invoice, valid?: true) }
+        let(:invoice) { instance_double(Invoice, valid?: true, errors: []) }
         before do
-          allow(file_header).to receive(:valid?).and_return(true)
-          allow(seller_party).to receive(:valid?).and_return(true)
-          allow(buyer_party).to receive(:valid?).and_return(true)
+          allow(file_header).to receive_messages(valid?: true, errors: [])
+          allow(seller_party).to receive_messages(valid?: true, errors: [])
+          allow(buyer_party).to receive_messages(valid?: true, errors: [])
         end
 
         it "returns true" do
@@ -41,9 +41,45 @@ module Facturae
       end
 
       context "when the Facturae document is not valid" do
+        before do
+          allow(file_header).to receive_messages(valid?: true, errors: [])
+          allow(seller_party).to receive_messages(valid?: true, errors: [])
+          allow(buyer_party).to receive_messages(valid?: true, errors: [])
+        end
+
         it "returns false" do
           expect(facturae_document.valid?).to be(false)
         end
+      end
+    end
+
+    describe "#errors" do
+      it "returns empty array when valid" do
+        allow(file_header).to receive_messages(valid?: true, errors: [])
+        allow(seller_party).to receive_messages(valid?: true, errors: [])
+        allow(buyer_party).to receive_messages(valid?: true, errors: [])
+        invoice = instance_double(Invoice, valid?: true, errors: [])
+        facturae_document.add_invoice(invoice)
+        facturae_document.valid?
+        expect(facturae_document.errors).to be_empty
+      end
+
+      it "returns error when invoices is empty" do
+        allow(file_header).to receive_messages(valid?: true, errors: [])
+        allow(seller_party).to receive_messages(valid?: true, errors: [])
+        allow(buyer_party).to receive_messages(valid?: true, errors: [])
+        facturae_document.valid?
+        expect(facturae_document.errors).to include("invoices must not be empty")
+      end
+
+      it "returns nested child errors with dot-path" do
+        allow(file_header).to receive_messages(valid?: true, errors: [])
+        allow(seller_party).to receive_messages(valid?: false, errors: ["person_type_code must be F or J"])
+        allow(buyer_party).to receive_messages(valid?: true, errors: [])
+        invoice = instance_double(Invoice, valid?: true, errors: [])
+        facturae_document.add_invoice(invoice)
+        facturae_document.valid?
+        expect(facturae_document.errors).to include("seller_party.person_type_code must be F or J")
       end
     end
   end
