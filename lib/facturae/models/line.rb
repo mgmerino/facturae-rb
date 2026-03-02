@@ -24,7 +24,8 @@ module Facturae
                   :unit_of_measure,
                   :discounts_and_rebates,
                   :charges,
-                  :gross_amount
+                  :gross_amount,
+                  :taxes_output
 
     def initialize(item_description:, quantity:, unit_price_without_tax:, total_cost:, **options)
       @item_description = item_description
@@ -33,6 +34,7 @@ module Facturae
       @total_cost = total_cost
       @article_code = options.fetch(:article_code, nil)
       @unit_of_measure = options.fetch(:unit_of_measure, UNIT_DEFAULT)
+      @taxes_output = options.fetch(:taxes_output, [])
       @discounts_and_rebates = []
       @charges = []
       @gross_amount = quantity * unit_price_without_tax

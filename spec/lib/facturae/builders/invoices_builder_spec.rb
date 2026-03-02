@@ -85,6 +85,7 @@ module Facturae
                   <UnitPriceWithoutTax>1.0</UnitPriceWithoutTax>
                   <TotalCost>1.0</TotalCost>
                   <GrossAmount>1.0</GrossAmount>
+                  <TaxesOutputs/>
                   <ArticleCode>1234567890123</ArticleCode>
                 </InvoiceLine>
               </Items>
