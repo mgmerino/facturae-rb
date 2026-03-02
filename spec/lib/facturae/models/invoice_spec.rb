@@ -16,11 +16,10 @@ module Facturae
                                                        language_name: "unset",
                                                        invoice_currency_code: "unset")
         expect(invoice.totals).to a_hash_including(total_gross_amount: 0.0,
+                                                   total_gross_amount_before_taxes: 0.0,
                                                    total_tax_outputs: 0.0,
                                                    total_taxes_withheld: 0.0,
                                                    invoice_total: 0.0,
-                                                   payment_on_account: 0.0,
-                                                   payment_due: 0.0,
                                                    total_outstanding_amount: 0.0,
                                                    total_executable_amount: 0.0)
         expect(invoice.taxes_output).to eq([])
@@ -49,11 +48,10 @@ module Facturae
         let(:custom_totals) do
           {
             total_gross_amount: 100.0,
+            total_gross_amount_before_taxes: 100.0,
             total_tax_outputs: 20.0,
             total_taxes_withheld: 0.0,
             invoice_total: 120.0,
-            payment_on_account: 0.0,
-            payment_due: 0.0,
             total_outstanding_amount: 120.0,
             total_executable_amount: 120.0
           }

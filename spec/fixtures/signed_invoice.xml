@@ -69,18 +69,9 @@
       <InvoiceIssueData>
         <IssueDate>2025-01-15</IssueDate>
         <InvoiceCurrencyCode>EUR</InvoiceCurrencyCode>
+        <TaxCurrencyCode>EUR</TaxCurrencyCode>
         <LanguageName>es</LanguageName>
       </InvoiceIssueData>
-      <InvoiceTotals>
-        <TotalGrossAmount>100.0</TotalGrossAmount>
-        <TotalTaxOutputs/>
-        <TotalTaxesWithheld>0.0</TotalTaxesWithheld>
-        <InvoiceTotal>121.0</InvoiceTotal>
-        <PaymentOnAccount/>
-        <PaymentDue/>
-        <TotalOutstandingAmount>121.0</TotalOutstandingAmount>
-        <TotalExecutableAmount>121.0</TotalExecutableAmount>
-      </InvoiceTotals>
       <TaxesOutputs>
         <Tax>
           <TaxTypeCode>01</TaxTypeCode>
@@ -93,15 +84,23 @@
           </TaxAmount>
         </Tax>
       </TaxesOutputs>
-      <TaxesWithheld/>
+      <InvoiceTotals>
+        <TotalGrossAmount>100.0</TotalGrossAmount>
+        <TotalGrossAmountBeforeTaxes>100.0</TotalGrossAmountBeforeTaxes>
+        <TotalTaxOutputs/>
+        <TotalTaxesWithheld>0.0</TotalTaxesWithheld>
+        <InvoiceTotal>121.0</InvoiceTotal>
+        <TotalOutstandingAmount>121.0</TotalOutstandingAmount>
+        <TotalExecutableAmount>121.0</TotalExecutableAmount>
+      </InvoiceTotals>
       <Items>
         <InvoiceLine>
           <ItemDescription>Professional services</ItemDescription>
           <Quantity>1.0</Quantity>
           <UnitOfMeasure>01</UnitOfMeasure>
           <UnitPriceWithoutTax>100.0</UnitPriceWithoutTax>
-          <GrossAmount>100.0</GrossAmount>
           <TotalCost>100.0</TotalCost>
+          <GrossAmount>100.0</GrossAmount>
           <ArticleCode/>
         </InvoiceLine>
       </Items>
