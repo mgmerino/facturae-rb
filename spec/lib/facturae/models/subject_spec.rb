@@ -42,6 +42,31 @@ module Facturae
         subject.valid?
         expect(subject.errors).to include("address_in_spain.country_code is not a valid EU country code")
       end
+
+      context "when type is :individual" do
+        it "requires name_field2 (FirstSurname)" do
+          individual = described_class.new(type: :individual, name_field1: "John",
+                                           address_in_spain: valid_address)
+          individual.valid?
+          expect(individual.errors).to include("name_field2 is required for individuals")
+        end
+      end
+
+      context "when type is :legal" do
+        it "does not require name_field2 (TradeName)" do
+          legal = described_class.new(type: :legal, name_field1: "Company SL",
+                                      address_in_spain: valid_address)
+          legal.valid?
+          expect(legal.errors).not_to include(a_string_matching(/name_field2/))
+        end
+
+        it "allows name_field2 when present" do
+          legal = described_class.new(type: :legal, name_field1: "Company SL",
+                                      name_field2: "Trade Name", address_in_spain: valid_address)
+          legal.valid?
+          expect(legal.errors).to be_empty
+        end
+      end
     end
   end
 end
