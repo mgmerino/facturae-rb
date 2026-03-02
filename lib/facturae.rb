@@ -4,6 +4,7 @@ require "date"
 require "nokogiri"
 
 require_relative "facturae/version"
+require_relative "facturae/validatable"
 require_relative "facturae/models/address"
 require_relative "facturae/models/facturae_document"
 require_relative "facturae/models/file_header"
