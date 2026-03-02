@@ -211,10 +211,11 @@ module Facturae
           facturae = xml_doc.at_xpath("//fe:Facturae", fe_ns)
           expect(facturae).not_to be_nil
 
-          file_header_elem = facturae.at_xpath("fe:FileHeader", fe_ns)
+          # Child elements are unqualified (no namespace) per Facturae XSD elementFormDefault
+          file_header_elem = facturae.at_xpath("FileHeader")
           expect(file_header_elem).not_to be_nil
 
-          invoices_elem = facturae.at_xpath("fe:Invoices", fe_ns)
+          invoices_elem = facturae.at_xpath("Invoices")
           expect(invoices_elem).not_to be_nil
         end
       end

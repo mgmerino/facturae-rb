@@ -125,7 +125,7 @@ module Facturae
           <<~XML
             <?xml version="1.0" encoding="UTF-8"?>
             <Facturae xmlns="http://www.facturae.gob.es/formato/Versiones/Facturaev3_2_2.xml">
-              <FileHeader>
+              <FileHeader xmlns="">
                 <SchemaVersion>3.2.2</SchemaVersion>
                 <Modality>I</Modality>
                 <InvoiceIssuerType>EM</InvoiceIssuerType>
@@ -144,7 +144,7 @@ module Facturae
                   <InvoiceCurrencyCode>EUR</InvoiceCurrencyCode>
                 </Batch>
               </FileHeader>
-              <Parties>
+              <Parties xmlns="">
                 <SellerParty>
                   <TaxIdentification>
                     <PersonTypeCode>J</PersonTypeCode>
@@ -182,7 +182,7 @@ module Facturae
                   </Individual>
                 </BuyerParty>
               </Parties>
-              <Invoices>
+              <Invoices xmlns="">
                 <Invoice>
                   <InvoiceHeader>
                     <InvoiceNumber>12345</InvoiceNumber>

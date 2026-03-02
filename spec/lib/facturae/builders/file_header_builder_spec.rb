@@ -23,7 +23,7 @@ module Facturae
         expect(xml.to_xml).to eq(
           <<~XML
             <?xml version="1.0"?>
-            <FileHeader>
+            <FileHeader xmlns="">
               <SchemaVersion>3.2.2</SchemaVersion>
               <Modality>I</Modality>
               <InvoiceIssuerType>EM</InvoiceIssuerType>
