@@ -118,3 +118,55 @@ The FACe validator (`se-proveedores-face.redsara.es`) rejected invoices signed b
 | `lib/facturae/xades/object_info.rb` | Fix SigPolicyId structure, remove SigPolicyQualifiers, `"emisor"`, `"text/xml"` |
 | `spec/lib/facturae/xades/signer_spec.rb` | Reorder mock tests to match new sign method flow |
 | `spec/lib/facturae/xades/signed_info_spec.rb` | Updated constructor to pass all required IDs |
+
+---
+
+# XSD Schema Namespace Compliance
+
+## Overview
+
+The generated XML used a default namespace (`xmlns="..."`) on the root element, which forced Nokogiri to emit `xmlns=""` on every child element group to undeclare it. While technically valid XML, this is unusual and some validators reject it. The canonical Facturae examples use a prefixed namespace on the root instead.
+
+## Issues fixed
+
+### Issue 1 — `xmlns=""` on child elements
+
+**Before:**
+```xml
+<Facturae xmlns="http://www.facturae.gob.es/formato/Versiones/Facturaev3_2_2.xml">
+  <FileHeader xmlns="">
+```
+
+**After:**
+```xml
+<fe:Facturae xmlns:fe="http://www.facturae.gob.es/formato/Versiones/Facturaev3_2_2.xml" xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+  <FileHeader>
+```
+
+The root element now uses the `fe:` prefix. Child elements (`FileHeader`, `Parties`, `Invoices`) are unqualified (no namespace), matching the XSD's default `elementFormDefault="unqualified"`. The `xmlns:ds` declaration is also placed on the root so the `ds:Signature` node inherits it.
+
+### Issue 2 — `<TradeName/>` emitted when nil
+
+**Before:** An empty `<TradeName/>` was always emitted for `LegalEntity`, even when `name_field2` was `nil`.
+
+**After:** `TradeName` is only emitted when `name_field2` is present, matching the schema's `minOccurs="0"`.
+
+### Issue 3 — Redundant `xmlns:ds` on `ds:Signature`
+
+**Before:** `ds:Signature` redeclared `xmlns:ds` even though it was already available from the root.
+
+**After:** Only `xmlns:xades` is declared on the `ds:Signature` node; `xmlns:ds` is inherited from the root.
+
+## Files changed
+
+| File | Changes |
+|------|---------|
+| `lib/facturae/builders/facturae_builder.rb` | Build XML without namespace, then post-process to add `fe:` prefix and `xmlns:ds` to root |
+| `lib/facturae/builders/file_header_builder.rb` | Remove `xmlns: ""` |
+| `lib/facturae/builders/parties_builder.rb` | Remove `xmlns: ""`, make `TradeName` conditional |
+| `lib/facturae/builders/invoices_builder.rb` | Remove `xmlns: ""` |
+| `lib/facturae/xades/signer.rb` | Remove redundant `xmlns:ds` from Signature node |
+| `spec/lib/facturae/builders/facturae_builder_spec.rb` | Update expected XML to use `fe:` prefix |
+| `spec/lib/facturae/builders/file_header_builder_spec.rb` | Remove `xmlns=""` from expected XML |
+| `spec/lib/facturae/builders/parties_builder_spec.rb` | Remove `xmlns=""` from expected XML |
+| `spec/lib/facturae/builders/invoices_builder_spec.rb` | Remove `xmlns=""` from expected XML |

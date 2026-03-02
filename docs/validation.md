@@ -101,7 +101,7 @@ The XAdES-BES signature includes:
    - The KeyInfo element
    - The SignedProperties (XAdES)
 
-2. **SignatureValue** - RSA-SHA1 signature over canonicalized SignedInfo
+2. **SignatureValue** - RSA-SHA512 signature over canonicalized SignedInfo
 
 3. **KeyInfo** - Contains:
    - X509Certificate (full certificate)
@@ -111,8 +111,8 @@ The XAdES-BES signature includes:
    - SigningTime (timestamp)
    - SigningCertificate (certificate digest)
    - SignaturePolicyIdentifier (Facturae v3.1 policy)
-   - SignerRole (supplier)
-   - DataObjectFormat (application/xml)
+   - SignerRole (emisor)
+   - DataObjectFormat (text/xml)
 
 ## Known Limitations
 
