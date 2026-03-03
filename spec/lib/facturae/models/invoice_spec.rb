@@ -138,6 +138,44 @@ module Facturae
         invoice.valid?
         expect(invoice.errors).to include("taxes_output[0].tax_type_code is not a valid tax type")
       end
+
+      it "returns error when total_gross_amount does not equal sum of line gross_amounts" do
+        line = Line.new(item_description: "Item", quantity: 2.0, unit_price_without_tax: 50.0, total_cost: 100.0)
+        invoice.add_invoice_line(line)
+        invoice.totals[:total_gross_amount] = 999.0
+        invoice.valid?
+        expect(invoice.errors).to include("total_gross_amount must equal sum of line gross_amounts")
+      end
+
+      it "accepts total_gross_amount matching sum of line gross_amounts" do
+        line = Line.new(item_description: "Item", quantity: 2.0, unit_price_without_tax: 50.0, total_cost: 100.0)
+        invoice.add_invoice_line(line)
+        invoice.totals[:total_gross_amount] = 100.0
+        invoice.valid?
+        expect(invoice.errors).not_to include("total_gross_amount must equal sum of line gross_amounts")
+      end
+
+      it "returns error when invoice_total does not match formula" do
+        invoice.totals[:total_gross_amount_before_taxes] = 100.0
+        invoice.totals[:total_tax_outputs] = 21.0
+        invoice.totals[:total_taxes_withheld] = 0.0
+        invoice.totals[:invoice_total] = 999.0
+        invoice.valid?
+        expect(invoice.errors).to include(
+          "invoice_total must equal gross_before_taxes + tax_outputs - taxes_withheld"
+        )
+      end
+
+      it "accepts invoice_total matching formula" do
+        invoice.totals[:total_gross_amount_before_taxes] = 100.0
+        invoice.totals[:total_tax_outputs] = 21.0
+        invoice.totals[:total_taxes_withheld] = 5.0
+        invoice.totals[:invoice_total] = 116.0
+        invoice.valid?
+        expect(invoice.errors).not_to include(
+          "invoice_total must equal gross_before_taxes + tax_outputs - taxes_withheld"
+        )
+      end
     end
   end
 end

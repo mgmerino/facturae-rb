@@ -20,6 +20,7 @@ module Facturae
       invoice.add_tax_withheld(tax)
       invoice_line.article_code = "1234567890123"
       invoice.issue_data[:issue_date] = issue_date
+      invoice.totals[:total_gross_amount] = 1.0
     end
 
     it "builds the XML representation of the invoices" do
@@ -69,7 +70,7 @@ module Facturae
                 </Tax>
               </TaxesWithheld>
               <InvoiceTotals>
-                <TotalGrossAmount>0.0</TotalGrossAmount>
+                <TotalGrossAmount>1.0</TotalGrossAmount>
                 <TotalGrossAmountBeforeTaxes>0.0</TotalGrossAmountBeforeTaxes>
                 <TotalTaxOutputs>0.0</TotalTaxOutputs>
                 <TotalTaxesWithheld>0.0</TotalTaxesWithheld>
