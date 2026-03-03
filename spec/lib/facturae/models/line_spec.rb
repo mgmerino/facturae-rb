@@ -68,6 +68,47 @@ module Facturae
         line.valid?
         expect(line.errors).to include("article_code must be a String")
       end
+
+      it "returns error when item_description is empty" do
+        line.item_description = ""
+        line.valid?
+        expect(line.errors).to include("item_description must not be empty")
+      end
+
+      it "returns error when item_description is only whitespace" do
+        line.item_description = "   "
+        line.valid?
+        expect(line.errors).to include("item_description must not be empty")
+      end
+
+      it "returns error when total_cost does not equal quantity * unit_price_without_tax" do
+        line.total_cost = 99.0
+        line.valid?
+        expect(line.errors).to include("total_cost must equal quantity * unit_price_without_tax")
+      end
+
+      it "accepts total_cost within 2-decimal precision" do
+        l = described_class.new(item_description: "Test", quantity: 3.0, unit_price_without_tax: 1.333,
+                                total_cost: 4.0)
+        l.valid?
+        expect(l.errors).not_to include("total_cost must equal quantity * unit_price_without_tax")
+      end
+
+      it "returns error when gross_amount does not equal total_cost - discounts + charges" do
+        line.add_discount("Promo", 2.0)
+        line.valid?
+        expect(line.errors).to include("gross_amount must equal total_cost - discounts + charges")
+      end
+
+      it "accepts gross_amount when discounts and charges are accounted for" do
+        l = described_class.new(item_description: "Test", quantity: 1.0, unit_price_without_tax: 100.0,
+                                total_cost: 100.0)
+        l.add_discount("Promo", 10.0)
+        l.add_charge("Surcharge", 5.0)
+        l.instance_variable_set(:@gross_amount, 95.0)
+        l.valid?
+        expect(l.errors).not_to include("gross_amount must equal total_cost - discounts + charges")
+      end
     end
   end
 end
