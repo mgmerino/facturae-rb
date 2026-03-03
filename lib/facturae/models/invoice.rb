@@ -78,6 +78,7 @@ module Facturae
       validate_children("taxes_output", @taxes_output)
       validate_children("taxes_withheld", @taxes_withheld)
       validate_children("invoice_lines", @invoice_lines)
+      validate_totals_arithmetic
     end
 
     def validate_hash_keys(name, hash, allowed_keys)
@@ -85,6 +86,31 @@ module Facturae
       invalid_keys.each do |key|
         add_error("#{name} contains unknown key: #{key}")
       end
+    end
+
+    def validate_totals_arithmetic
+      validate_total_gross_amount
+      validate_invoice_total
+    end
+
+    def validate_total_gross_amount
+      return if @invoice_lines.empty?
+
+      expected = @invoice_lines.sum { |line| line.gross_amount.is_a?(Float) ? line.gross_amount : 0.0 }.round(2)
+      return if @totals[:total_gross_amount].is_a?(Float) && @totals[:total_gross_amount].round(2) == expected
+
+      add_error("total_gross_amount must equal sum of line gross_amounts")
+    end
+
+    def validate_invoice_total
+      t = @totals
+      return unless [t[:total_gross_amount_before_taxes], t[:total_tax_outputs],
+                     t[:total_taxes_withheld], t[:invoice_total]].all? { |v| v.is_a?(Float) }
+
+      expected = (t[:total_gross_amount_before_taxes] + t[:total_tax_outputs] - t[:total_taxes_withheld]).round(2)
+      return if t[:invoice_total].round(2) == expected
+
+      add_error("invoice_total must equal gross_before_taxes + tax_outputs - taxes_withheld")
     end
   end
 end
