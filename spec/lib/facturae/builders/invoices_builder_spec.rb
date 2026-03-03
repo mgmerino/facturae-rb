@@ -3,7 +3,10 @@
 module Facturae
   RSpec.describe InvoicesBuilder do
     let(:issue_date) { Date.new(2025, 4, 3) }
-    let(:invoice) { Invoice.new }
+    let(:invoice) do
+      Invoice.new(invoice_header: { invoice_number: "001", invoice_series_code: "A",
+                                    invoice_document_type: "FC", invoice_class: "OO" })
+    end
     let(:invoice_line) do
       Line.new(item_description: "item",
                quantity: 1.0,
@@ -34,10 +37,10 @@ module Facturae
           <Invoices>
             <Invoice>
               <InvoiceHeader>
-                <InvoiceNumber>unset</InvoiceNumber>
-                <InvoiceSeriesCode>unset</InvoiceSeriesCode>
-                <InvoiceDocumentType>unset</InvoiceDocumentType>
-                <InvoiceClass>unset</InvoiceClass>
+                <InvoiceNumber>001</InvoiceNumber>
+                <InvoiceSeriesCode>A</InvoiceSeriesCode>
+                <InvoiceDocumentType>FC</InvoiceDocumentType>
+                <InvoiceClass>OO</InvoiceClass>
               </InvoiceHeader>
               <InvoiceIssueData>
                 <IssueDate>2025-04-03</IssueDate>

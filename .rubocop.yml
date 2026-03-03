@@ -16,6 +16,8 @@ Metrics/ClassLength:
 
 Metrics/ModuleLength:
   Max: 160
+  Exclude:
+    - spec/**/*_spec.rb
 
 Metrics/CyclomaticComplexity:
   Max: 8

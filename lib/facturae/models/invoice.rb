@@ -75,6 +75,7 @@ module Facturae
       validate_hash_keys("invoice_header", @invoice_header, INVOICE_HEADER_KEYS)
       validate_hash_keys("issue_data", @issue_data, ISSUE_DATA_KEYS)
       validate_hash_keys("totals", @totals, TOTALS_KEYS)
+      validate_invoice_number
       validate_children("taxes_output", @taxes_output)
       validate_children("taxes_withheld", @taxes_withheld)
       validate_children("invoice_lines", @invoice_lines)
@@ -86,6 +87,12 @@ module Facturae
       invalid_keys.each do |key|
         add_error("#{name} contains unknown key: #{key}")
       end
+    end
+
+    def validate_invoice_number
+      number = @invoice_header[:invoice_number]
+      add_error("invoice_number is required") if number.nil? || (number.is_a?(String) && number.strip.empty?)
+      add_error("invoice_number must not be 'unset'") if number == "unset"
     end
 
     def validate_totals_arithmetic

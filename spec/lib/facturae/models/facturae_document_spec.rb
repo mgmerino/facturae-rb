@@ -2,8 +2,8 @@
 
 module Facturae
   RSpec.describe FacturaeDocument do
-    let(:buyer_party) { instance_double(Party) }
-    let(:seller_party) { instance_double(Party) }
+    let(:buyer_party) { instance_double(Party, tax_identification: { tax_id_number: "B12345678" }) }
+    let(:seller_party) { instance_double(Party, tax_identification: { tax_id_number: "A87654321" }) }
     let(:file_header) { instance_double(FileHeader) }
     let(:facturae_document) { described_class.new(seller_party:, buyer_party:, file_header:) }
 
@@ -80,6 +80,29 @@ module Facturae
         facturae_document.add_invoice(invoice)
         facturae_document.valid?
         expect(facturae_document.errors).to include("seller_party.person_type_code must be F or J")
+      end
+
+      it "returns error when seller and buyer have the same tax_id_number" do
+        same_tid = { tax_id_number: "A12345678" }
+        allow(seller_party).to receive(:tax_identification).and_return(same_tid)
+        allow(buyer_party).to receive(:tax_identification).and_return(same_tid)
+        allow(file_header).to receive_messages(valid?: true, errors: [])
+        allow(seller_party).to receive_messages(valid?: true, errors: [])
+        allow(buyer_party).to receive_messages(valid?: true, errors: [])
+        invoice = instance_double(Invoice, valid?: true, errors: [])
+        facturae_document.add_invoice(invoice)
+        facturae_document.valid?
+        expect(facturae_document.errors).to include("seller and buyer must have different tax_id_number")
+      end
+
+      it "does not return error when seller and buyer have different tax_id_numbers" do
+        allow(file_header).to receive_messages(valid?: true, errors: [])
+        allow(seller_party).to receive_messages(valid?: true, errors: [])
+        allow(buyer_party).to receive_messages(valid?: true, errors: [])
+        invoice = instance_double(Invoice, valid?: true, errors: [])
+        facturae_document.add_invoice(invoice)
+        facturae_document.valid?
+        expect(facturae_document.errors).not_to include("seller and buyer must have different tax_id_number")
       end
     end
   end
