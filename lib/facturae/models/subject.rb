@@ -21,7 +21,7 @@ module Facturae
                   :address_in_spain,
                   :overseas_address # Optional
 
-    def initialize(type:, name_field1:, name_field2:, name_field3: nil, address_in_spain: Address.new)
+    def initialize(type:, name_field1:, name_field2: nil, name_field3: nil, address_in_spain: Address.new)
       @type = type
       @name_field1 = name_field1
       @name_field2 = name_field2
@@ -35,9 +35,17 @@ module Facturae
       super
       add_error("type must be :individual or :legal") unless SUBJECT_TYPES.include?(@type)
       add_error("name_field1 must be a String") unless @name_field1.is_a?(String)
-      add_error("name_field2 must be a String") unless @name_field2.is_a?(String)
+      validate_name_field2
       validate_child("address_in_spain", @address_in_spain)
       validate_child("overseas_address", @overseas_address)
+    end
+
+    def validate_name_field2
+      if @type == INDIVIDUAL
+        add_error("name_field2 is required for individuals") unless @name_field2.is_a?(String)
+      elsif @name_field2 && !@name_field2.is_a?(String)
+        add_error("name_field2 must be a String")
+      end
     end
   end
 end
