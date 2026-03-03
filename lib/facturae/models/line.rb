@@ -52,14 +52,26 @@ module Facturae
 
     def validate
       super
-      add_error("item_description must be a String") unless @item_description.is_a?(String)
+      validate_types
+      validate_discounts_and_rebates
+      validate_charges
+      validate_arithmetic
+    end
+
+    def validate_types
+      validate_item_description
       add_error("quantity must be a Float") unless @quantity.is_a?(Float)
       add_error("unit_price_without_tax must be a Float") unless @unit_price_without_tax.is_a?(Float)
       add_error("total_cost must be a Float") unless @total_cost.is_a?(Float)
       add_error("gross_amount must be a Float") unless @gross_amount.is_a?(Float)
       add_error("article_code must be a String") if @article_code && !@article_code.is_a?(String)
-      validate_discounts_and_rebates
-      validate_charges
+    end
+
+    def validate_item_description
+      add_error("item_description must be a String") unless @item_description.is_a?(String)
+      return unless @item_description.is_a?(String) && @item_description.strip.empty?
+
+      add_error("item_description must not be empty")
     end
 
     def validate_discounts_and_rebates
@@ -74,6 +86,33 @@ module Facturae
         add_error("charges[#{i}].reason must be a String") unless charge[:reason].is_a?(String)
         add_error("charges[#{i}].amount must be a Float") unless charge[:amount].is_a?(Float)
       end
+    end
+
+    def validate_arithmetic
+      return unless arithmetic_types_valid?
+
+      validate_total_cost
+      validate_gross_amount
+    end
+
+    def arithmetic_types_valid?
+      [@quantity, @unit_price_without_tax, @total_cost, @gross_amount].all? { |v| v.is_a?(Float) }
+    end
+
+    def validate_total_cost
+      expected = (@quantity * @unit_price_without_tax).round(2)
+      return if @total_cost.round(2) == expected
+
+      add_error("total_cost must equal quantity * unit_price_without_tax")
+    end
+
+    def validate_gross_amount
+      discount_total = @discounts_and_rebates.sum { |d| d[:amount].is_a?(Float) ? d[:amount] : 0.0 }
+      charge_total = @charges.sum { |c| c[:amount].is_a?(Float) ? c[:amount] : 0.0 }
+      expected = (@total_cost - discount_total + charge_total).round(2)
+      return if @gross_amount.round(2) == expected
+
+      add_error("gross_amount must equal total_cost - discounts + charges")
     end
   end
 end
