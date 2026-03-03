@@ -2,7 +2,7 @@ PATH
   remote: .
   specs:
     facturae (0.1.0)
-      nokogiri (~> 1.11)
+      nokogiri (~> 1.19)
 
 GEM
   remote: https://rubygems.org/
@@ -83,10 +83,10 @@ GEM
     logger (1.6.6)
     mercenary (0.4.0)
     mini_portile2 (2.8.9)
-    nokogiri (1.18.9)
+    nokogiri (1.19.1)
       mini_portile2 (~> 2.8.2)
       racc (~> 1.4)
-    nokogiri (1.18.9-x86_64-linux-gnu)
+    nokogiri (1.19.1-x86_64-linux-gnu)
       racc (~> 1.4)
     observer (0.1.2)
     ostruct (0.6.1)
@@ -206,7 +206,7 @@ DEPENDENCIES
   debug (~> 1.10)
   facturae!
   jekyll (~> 4.3)
-  nokogiri (~> 1.18)
+  nokogiri (~> 1.19)
   rake (~> 13.0)
   rspec (~> 3.0)
   rubocop (~> 1.21)
