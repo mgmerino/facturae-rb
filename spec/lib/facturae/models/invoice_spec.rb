@@ -102,11 +102,14 @@ module Facturae
     end
 
     describe "#valid?" do
-      let(:invoice) { described_class.new }
-
       context "when the invoice is valid" do
+        let(:valid_invoice) do
+          described_class.new(invoice_header: { invoice_number: "001", invoice_series_code: "A",
+                                                invoice_document_type: "FC", invoice_class: "OO" })
+        end
+
         it "returns true" do
-          expect(invoice.valid?).to be(true)
+          expect(valid_invoice.valid?).to be(true)
         end
       end
 
@@ -119,11 +122,13 @@ module Facturae
     end
 
     describe "#errors" do
-      let(:invoice) { described_class.new }
-
       it "returns empty array when valid" do
-        invoice.valid?
-        expect(invoice.errors).to be_empty
+        valid_invoice = described_class.new(
+          invoice_header: { invoice_number: "001", invoice_series_code: "A",
+                            invoice_document_type: "FC", invoice_class: "OO" }
+        )
+        valid_invoice.valid?
+        expect(valid_invoice.errors).to be_empty
       end
 
       it "returns error for unknown invoice_header key" do
@@ -175,6 +180,31 @@ module Facturae
         expect(invoice.errors).not_to include(
           "invoice_total must equal gross_before_taxes + tax_outputs - taxes_withheld"
         )
+      end
+
+      it "returns error when invoice_number is nil" do
+        invoice.invoice_header[:invoice_number] = nil
+        invoice.valid?
+        expect(invoice.errors).to include("invoice_number is required")
+      end
+
+      it "returns error when invoice_number is empty" do
+        invoice.invoice_header[:invoice_number] = ""
+        invoice.valid?
+        expect(invoice.errors).to include("invoice_number is required")
+      end
+
+      it "returns error when invoice_number is 'unset'" do
+        invoice.invoice_header[:invoice_number] = "unset"
+        invoice.valid?
+        expect(invoice.errors).to include("invoice_number must not be 'unset'")
+      end
+
+      it "accepts a valid invoice_number" do
+        invoice.invoice_header[:invoice_number] = "INV-001"
+        invoice.valid?
+        expect(invoice.errors).not_to include("invoice_number is required")
+        expect(invoice.errors).not_to include("invoice_number must not be 'unset'")
       end
     end
   end
